@@ -1,20 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Loader2, Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Turnstile, { type TurnstileRef } from "@/components/turnstile";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
 const FIELD_CLASS =
   "w-full rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60";
 
+// Public site key — safe to expose in the client bundle. Set
+// `PUBLIC_TURNSTILE_SITE_KEY` in `.env` (Vite reads it at build time). When
+// unset, the widget is skipped and server-side verification is also bypassed
+// (dev mode). Cloudflare's "always passes" test key is `1x00000000000000000000AA`.
+const TURNSTILE_SITE_KEY = import.meta.env
+  .PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
+
 export default function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileRef | null>(null);
+
+  const turnstileRequired = Boolean(TURNSTILE_SITE_KEY);
+  const turnstileMissing = turnstileRequired && !turnstileToken;
 
   async function submit(form: HTMLFormElement) {
     if (status === "submitting") return;
+    if (turnstileMissing) {
+      setError("Please complete the security check before sending.");
+      setStatus("error");
+      return;
+    }
 
     const data = new FormData(form);
     const payload = {
@@ -22,6 +40,7 @@ export default function ContactForm() {
       email: String(data.get("email") ?? "").trim(),
       subject: String(data.get("subject") ?? "").trim(),
       message: String(data.get("message") ?? "").trim(),
+      turnstileToken: turnstileToken ?? "",
     };
 
     setStatus("submitting");
@@ -53,9 +72,14 @@ export default function ContactForm() {
       }
       setStatus("success");
       form.reset();
+      setTurnstileToken(null);
+      turnstileRef.current?.reset();
     } catch (err) {
       setStatus("error");
       setError(err instanceof Error ? err.message : "Failed to send message.");
+      // Token is single-use — refresh the widget so the user can retry.
+      setTurnstileToken(null);
+      turnstileRef.current?.reset();
     }
   }
 
@@ -154,6 +178,19 @@ export default function ContactForm() {
         />
       </div>
 
+      {TURNSTILE_SITE_KEY && (
+        <div className="flex flex-col gap-1.5">
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={TURNSTILE_SITE_KEY}
+            onToken={setTurnstileToken}
+            onExpire={() => setTurnstileToken(null)}
+            onError={() => setTurnstileToken(null)}
+            className="min-h-[65px]"
+          />
+        </div>
+      )}
+
       {status === "error" && error && (
         <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive">
           <AlertCircle className="mt-0.5 size-4 shrink-0" />
@@ -163,7 +200,7 @@ export default function ContactForm() {
 
       <button
         type="submit"
-        disabled={submitting}
+        disabled={submitting || turnstileMissing}
         className={cn(
           "inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70",
         )}

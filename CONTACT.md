@@ -37,6 +37,40 @@ N8N_CONTACT_WEBHOOK_URL="https://<your-n8n-host>/webhook/contact"
 > Use the **pooled** Neon connection string (host contains `-pooler`) for
 > serverless/edge environments like Cloudflare Workers.
 
+### Spam protection — Cloudflare Turnstile
+
+The form is gated by a [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/)
+challenge. The flow:
+
+1. `src/components/turnstile.tsx` loads the Turnstile script and renders the
+   widget inside `src/components/contact-form.tsx`. The verified token is
+   captured and sent with the form payload as `turnstileToken`.
+2. `src/pages/api/contact.ts` calls `verifyTurnstile()` from `src/lib/contact.ts`
+   **before** any Neon insert or n8n webhook fire — bots are rejected without
+   touching your database or downstream automations.
+3. `verifyTurnstile()` POSTs the token to Cloudflare's `siteverify` endpoint
+   with the matching secret key and the visitor's IP. On success the request
+   proceeds; on failure a 400 is returned.
+
+Env vars:
+
+```bash
+# Public — embedded in the client bundle (PUBLIC_ prefix → import.meta.env).
+PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA
+# Secret — server only, read via cloudflare:workers env. NEVER prefix with PUBLIC_.
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+```
+
+Cloudflare's test keys above always pass — handy for local dev. Create a real
+widget at [dash.cloudflare.com → Turnstile](https://dash.cloudflare.com/?to=/:account/turnstile)
+and swap in the production keys (site key in `.env` / client, secret key in
+`.dev.vars` locally and `wrangler secret put TURNSTILE_SECRET_KEY` for prod).
+
+When **both** keys are unset, the widget is hidden and server verification is
+skipped (pure dev mode). When the site key is set but the secret key is missing,
+verification is also skipped — useful for previewing the widget UI locally
+without blocking submits.
+
 ### Neon table schema
 
 Run this once against your Neon database (SQL editor or `psql`):

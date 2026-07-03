@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { handleContact, validateContact } from "@/lib/contact";
+import { handleContact, validateContact, verifyTurnstile } from "@/lib/contact";
 import { createPosthogClient } from "@/lib/posthog";
 
 export const prerender = false;
@@ -38,6 +38,18 @@ export const POST: APIRoute = async ({ request, locals, clientAddress }) => {
   }
   const userAgent = request.headers.get("user-agent") ?? undefined;
   const sessionId = request.headers.get("X-PostHog-Session-Id") ?? undefined;
+
+  // Cloudflare Turnstile — verify the token before touching Neon / n8n so we
+  // don't burn DB writes or webhook calls on bot traffic. Skipped automatically
+  // when no `TURNSTILE_SECRET_KEY` is configured (dev mode).
+  const turnstile = await verifyTurnstile(
+    locals,
+    validated.data.turnstileToken,
+    ip,
+  );
+  if (!turnstile.ok) {
+    return json({ ok: false, error: turnstile.error }, 400);
+  }
 
   const result = await handleContact(locals, validated.data, { ip, userAgent });
 
