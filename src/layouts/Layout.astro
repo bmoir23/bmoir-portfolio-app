@@ -3,6 +3,7 @@ import "../styles/global.css";
 import { DATA } from "@/data/resume";
 import { CONFIG } from "@/data/config";
 import NavbarIsland from "@/components/NavbarIsland";
+import AuroraShell from "@/components/aurora-shell";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 import PostHog from "@/components/posthog.astro";
 
@@ -158,6 +159,9 @@ const { baseFontSize } = CONFIG.typography;
     <!-- End Google Analytics -->
   </head>
   <body class="min-h-screen bg-background font-sans antialiased relative">
+    <!-- Subtle aurora gradient mesh — theme-aware, sits behind all page content -->
+    <AuroraShell client:load />
+
     <!-- FlickeringGrid header background - matches template exactly -->
     <div class="absolute inset-0 top-0 left-0 right-0 h-25 overflow-hidden z-0">
       <FlickeringGrid
