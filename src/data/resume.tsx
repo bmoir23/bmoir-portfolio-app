@@ -37,8 +37,8 @@ export const DATA = {
   sections: {
     githubActivity: {
       order: 1, enabled: true,
-      label: "Open Source",
-      heading: "GitHub Activity",
+      label: "Coding Activity",
+      heading: "GitHub Activity Graph",
       text: "My contribution graph over the last year. Flip on Game Mode to blast through it retro-space-shooter style.",
     },
     about: { order: 2, enabled: true, heading: "About" },
@@ -163,7 +163,7 @@ export const DATA = {
       location: "Knoxville, TN (Remote)",
       title: "CTO & Principal AI Architect",
       logoUrl: "https://www.google.com/s2/favicons?domain=liinkd.xyz&sz=128",
-      start: "January 2023",
+      start: "January 2025",
       end: undefined,
       description:
         "Lead all technical strategy, AI architecture, and platform engineering for a creator-infrastructure startup building agentic AI tooling. Architected the Syncc Executive Agent OS — a production multi-agent AI platform integrating LangChain orchestration, MCP servers, n8n automation, and vector retrieval with configurable human-in-the-loop oversight and behavioral governance. Designed RAG document Q&A pipelines with DeepEval-based evaluation, a Terraform/AWS Lambda structured data-extraction pipeline, and advanced prompt-engineering frameworks across GPT-4, Claude, and open-source models. Established MLOps standards with AI Gateway routing for cost governance, observability, and latency optimization across cloud providers.",
@@ -176,7 +176,7 @@ export const DATA = {
       title: "Customer Success & Technical Solutions Manager",
       logoUrl: "https://www.google.com/s2/favicons?domain=benzinga.com&sz=128",
       start: "January 2020",
-      end: "May 2022",
+      end: "May 2023",
       description:
         "Served as the primary technical bridge between enterprise customers and core engineering teams for a leading financial data and trading SaaS platform. Ran end-to-end technical discovery with enterprise clients, translating complex trading and data requirements into integration roadmaps that drove churn reduction and expansion revenue. Architected an in-house customer-facing ticketing and feedback system for feature tracking, real-time bug triage, and CX analytics. Led CXO-level technical pursuits as the SME during sales cycles, and expanded the Web3/blockchain vertical to 100K+ subscribers and 1M+ views.",
     },
@@ -187,22 +187,22 @@ export const DATA = {
       location: "New York, NY (Remote)",
       title: "Customer Success Manager & Project Manager",
       logoUrl: "https://www.google.com/s2/favicons?domain=storetasker.com&sz=128",
-      start: "August 2019",
+      start: "August 2018",
       end: "January 2020",
       description:
         "Managed technical project scoping and expert-client matching on a Shopify development marketplace, overseeing end-to-end delivery of web development and e-commerce integration engagements across a network of 200+ developers. Resolved complex platform escalations, defined SOPs for technical quality review, and partnered with the Director of Operations on workflow optimization and capacity planning.",
     },
     {
-      company: "Ketamine Media / Upwork",
+      company: "Freelance Contractor / Upwork",
       href: "https://www.upwork.com",
       badges: ["Freelance"],
       location: "Remote",
-      title: "Full-Stack Developer & Digital Marketing Consultant",
+      title: "Full-Stack Developer | Digital Marketing Consultant | AI/ ML Enablement Consultant and Engineer| Automation and Sytem Flows Engineer",
       logoUrl: "https://www.google.com/s2/favicons?domain=upwork.com&sz=128",
-      start: "January 2018",
-      end: "December 2020",
+      start: "January 2015",
+      end: "Ongoing",
       description:
-        "Built custom WordPress themes, RESTful API integrations, and client-side JavaScript/React applications. Managed Google Ads campaigns, SEO strategy, and PPC optimization across multiple client accounts.",
+        "Built custom WordPress/ Shopify/ Wix/ Webflow themes and client websites, built RESTful API integrations, built and updated client-side JavaScript/React applications. Managed Google Ads campaigns, digital marketing campaigns, project management, SEO strategy, and PPC optimization across multiple client accounts.",
     },
   ],
   education: [
@@ -212,7 +212,7 @@ export const DATA = {
       degree: "B.S. Computer Science — AI Engineering",
       logoUrl: "https://www.google.com/s2/favicons?domain=umd.edu&sz=128",
       start: "2023",
-      end: "Present",
+      end: "May 2026",
     },
     {
       school: "Coursera",
