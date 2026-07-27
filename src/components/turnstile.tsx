@@ -27,6 +27,7 @@ declare global {
           sitekey: string;
           theme?: "light" | "dark" | "auto";
           appearance?: "always" | "execute" | "manage";
+          action?: string;
           callback?: (token: string) => void;
           "expired-callback"?: () => void;
           "error-callback"?: () => void;
@@ -38,7 +39,10 @@ declare global {
   }
 }
 
-const SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+// `render=explicit` is required when calling turnstile.render() ourselves
+// instead of using the implicit `.cf-turnstile` auto-mount markup.
+const SCRIPT_SRC =
+  "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 let scriptPromise: Promise<void> | null = null;
 
 function loadTurnstileScript(): Promise<void> {
@@ -48,7 +52,7 @@ function loadTurnstileScript(): Promise<void> {
 
   scriptPromise = new Promise<void>((resolve, reject) => {
     const existing = document.querySelector<HTMLScriptElement>(
-      `script[src="${SCRIPT_SRC}"]`,
+      `script[src^="https://challenges.cloudflare.com/turnstile/v0/api.js"]`,
     );
     if (existing) {
       if (window.turnstile) {
@@ -139,6 +143,7 @@ const Turnstile = forwardRef<TurnstileRef, Props>(function Turnstile(
           {
             sitekey: siteKey,
             theme,
+            action: "contact",
             callback: (token: string) => cbRef.current.onToken(token),
             "expired-callback": () => cbRef.current.onExpire?.(),
             "error-callback": () => cbRef.current.onError?.(),
