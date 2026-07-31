@@ -25,7 +25,11 @@
 		// the client bundle at build time.
 		"PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAADvDvwh3dn8mKvhK",
 		"PUBLIC_POSTHOG_API_KEY": "phc_rbfxvmPhmR4yZyEhWD9dVj76eqe3hTttT74a5jEU6ZWG",
-		"PUBLIC_POSTHOG_HOST": "https://us.i.posthog.com"
+		// Browser capture goes through the site's own first-party reverse proxy
+		// (src/pages/ingest/[...path].ts) so tracker blockers can't drop events
+		// by blocking the third-party posthog.com host. Server-side ingest
+		// (POSTHOG_HOST above) still talks to us.i.posthog.com directly.
+		"PUBLIC_POSTHOG_HOST": "https://portfolio.brianmoir.dev/ingest"
 	},
 	"ai": {
 		  "binding": "AI"
