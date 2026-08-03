@@ -6,6 +6,7 @@ import { Icons } from "@/components/icons";
 import { DATA } from "@/data/resume";
 import BlogPostBody from "@/components/blog-post-body";
 import { createPosthogClient } from "@/lib/posthog";
+import BackButton from "@/components/ui/back-button.astro";
 
 export const prerender = false;
 
@@ -53,13 +54,7 @@ const cardClass = "rounded-2xl border border-border bg-card p-6 sm:p-8";
 <Layout title={project.title} description={project.excerpt} image={project.coverImageUrl}>
   <main class="min-h-dvh flex flex-col gap-8">
     <section class="flex items-center justify-between pt-2">
-      <a
-        href="/projects"
-        class="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft className="h-4 w-4" aria-hidden />
-        Back to projects
-      </a>
+      <BackButton href="/projects" label="Back" class="text-muted-foreground hover:text-foreground" />
       <a
         href="/"
         class="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"

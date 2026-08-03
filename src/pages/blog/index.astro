@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import { getPosts, isSanityConfigured } from "@/lib/sanity";
 import { BlogCard, type BlogCardPost } from "@/components/blog-card";
 import { DATA } from "@/data/resume";
+import BackButton from "@/components/ui/back-button.astro";
 
 export const prerender = false;
 
@@ -21,6 +22,10 @@ if (configured) {
 
 <Layout title="Blog">
   <main class="min-h-dvh flex flex-col gap-10">
+    <div class="pt-2">
+      <BackButton href="/" label="Back" />
+    </div>
+
     <section class="flex flex-col gap-y-3 items-center justify-center pt-4">
       <div class="flex items-center w-full">
         <div class="flex-1 h-px bg-linear-to-r from-transparent from-5% via-border via-95% to-transparent"></div>
