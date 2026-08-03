@@ -1,0 +1,59 @@
+---
+description: Domain-aware ACE pattern search — discover actual server domain names before filtering ace_search results
+alwaysApply: false
+---
+
+# Domain-Aware Pattern Search
+
+## CRITICAL: Discover Domains First
+
+**NEVER guess domain names** like "auth", "api", "test".
+Server domains are SEMANTIC like "typescript-development-practices".
+
+### Step 1: Call ace_list_domains
+
+**BEFORE using domain filtering**, discover available domains:
+
+```
+ace_list_domains()
+→ Returns: {
+    "domains": [
+      { "name": "mcp-cli-testing-and-api-resilience", "count": 34 },
+      { "name": "typescript-development-practices", "count": 27 },
+      { "name": "cli-and-package-version-diagnostics", "count": 23 }
+    ],
+    "total_domains": 17,
+    "total_patterns": 206
+  }
+```
+
+### Step 2: Match Domain to Task
+
+Read domain names semantically to find the best match:
+
+| Task Context | Look for domains containing |
+|--------------|----------------------------|
+| TypeScript code | "typescript", "development", "practices" |
+| Testing work | "testing", "test", "resilience" |
+| CLI/API work | "cli", "api", "config" |
+| Debugging | "diagnostics", "troubleshooting" |
+
+### Step 3: Use Actual Domain Names
+
+```
+# CORRECT - use exact domain name from ace_list_domains
+ace_search(query="testing patterns", allowed_domains=["mcp-cli-testing-and-api-resilience"])
+
+# WRONG - hardcoded domain that doesn't exist on server
+ace_search(query="testing patterns", allowed_domains=["test"])
+```
+
+## Workflow
+
+1. `ace_list_domains()` - See what domains exist
+2. Pick relevant domain(s) based on task context
+3. `ace_search(query="<your query>", allowed_domains=["picked-domain"])`
+
+## Why This Matters
+
+Using non-existent domains returns 0 results. Always verify domain names exist first.
