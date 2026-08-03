@@ -1,0 +1,20 @@
+---
+import { ArrowLeft } from "lucide-react";
+
+interface Props {
+  href?: string;
+  label?: string;
+  class?: string;
+}
+
+const { href = "/", label = "Back", class: className = "" } = Astro.props as Props;
+---
+
+<a
+  href={href}
+  onclick="if (window.history.length > 1) { window.history.back(); return false; }"
+  class={`inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground ${className}`}
+>
+  <ArrowLeft className="size-4" />
+  {label}
+</a>
