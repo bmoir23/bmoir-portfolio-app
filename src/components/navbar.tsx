@@ -26,6 +26,20 @@ type HoverStyle = {
   hoverFgDark?: string;
 };
 
+function normalizePathname(path: string): string {
+  if (!path) return "/";
+  let pathname = path;
+  try {
+    pathname = new URL(path, "http://localhost").pathname;
+  } catch {
+    pathname = path;
+  }
+  if (pathname !== "/") {
+    pathname = pathname.replace(/\/+$/, "");
+  }
+  return pathname || "/";
+}
+
 function hoverStyleVars(item: HoverStyle): CSSProperties {
   const vars: Record<string, string> = {};
   if (item.hoverBg) vars["--hover-bg"] = item.hoverBg;
@@ -41,8 +55,10 @@ function hoverStyleVars(item: HoverStyle): CSSProperties {
 
 function isActivePath(itemHref: string, pathname: string): boolean {
   if (!itemHref.startsWith("/")) return false;
-  if (itemHref === "/") return pathname === "/";
-  return pathname === itemHref || pathname.startsWith(`${itemHref}/`);
+  const normalizedItem = normalizePathname(itemHref);
+  const normalizedPath = normalizePathname(pathname);
+  if (normalizedItem === "/") return normalizedPath === "/";
+  return normalizedPath === normalizedItem || normalizedPath.startsWith(`${normalizedItem}/`);
 }
 
 const HOVER_ICON_CLASSES = cn(
