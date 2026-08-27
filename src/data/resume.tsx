@@ -29,14 +29,14 @@ export const DATA = {
   description:
     "AI Solutions Architect specializing in multi-agent systems, RAG pipelines, and enterprise AI orchestration.",
   summary:
-    "I'm the CTO & Principal AI Architect at [Liink'd](/#work), where I designed the Syncc Executive Agent OS — a production multi-agent AI platform built on LangChain orchestration, the MCP protocol, n8n agentic workflows, and vector database retrieval. I bring [7+ years of customer-facing technical experience](/#work) across SaaS, enterprise solutions, and platform consulting, and I'm currently [advancing my studies in Computer Science & AI Engineering at the University of Maryland](/#education). I specialize in [agentic system design, advanced prompt engineering, and AI orchestration](/#skills) on modern cloud infrastructure including GCP and Vertex AI.",
+    "I'm the CTO & Principal AI Architect at [Liink'd](/#work), where I designed the Syncc Executive Agent OS — a production multi-agent platform built on LangChain orchestration, the MCP protocol, n8n agentic workflows, and vector database retrieval. I bring [10+ years of technical leadership across SaaS and enterprise platforms](/#work), owning product strategy, delivery execution, and cross-functional roadmap alignment from discovery to launch. I specialize in [LLM platform design, multi-agent orchestration, and enterprise AI operating models](/#skills), including evaluation frameworks, governance controls, observability, and scale-ready cloud deployment across GCP and Vertex AI.",
   avatarUrl: "/brian-moir.png",
   resumeUrl:
     "https://docs.google.com/document/d/1b1bkDDj_6spetyCchz22X0rbsx7bbKB1bb2YbwD3JYI/edit?usp=sharing",
   ogImage: "/og_image.png",
   sections: {
     githubActivity: {
-      order: 1, enabled: true,
+    order: 5, enabled: true,
       label: "Coding Activity",
       heading: "GitHub Activity Graph",
       text: "My contribution graph over the last year. Flip on Game Mode to blast through it retro-space-shooter style.",
@@ -44,31 +44,31 @@ export const DATA = {
     about: { order: 2, enabled: true, heading: "About" },
     work: { order: 3, enabled: true, heading: "Work Experience", presentLabel: "Present" },
     education: { order: 4, enabled: true, heading: "Education & Certifications" },
-    skills: { order: 5, enabled: true, heading: "Skills" },
+  skills: { order: 6, enabled: true, heading: "Skills" },
     projects: {
-      order: 6, enabled: true,
+    order: 7, enabled: true,
       label: "My Work",
       heading: "Things I've architected & shipped",
       text: "A selection of AI platforms and pipelines I've designed and built — from multi-agent orchestration systems to production RAG and data-extraction infrastructure.",
     },
     blog: {
-      order: 7, enabled: true,
+    order: 8, enabled: true,
       label: "Writing",
       heading: "From the Blog",
       text: "Notes, deep dives, and lessons from building AI platforms, agentic systems, and developer infrastructure.",
     },
     hackathons: {
-      order: 9, enabled: false,
+    order: 10, enabled: false,
       label: "Hackathons",
       heading: "I like building things",
       text: "",
     },
     photos: {
-      order: 8, enabled: false,
+    order: 9, enabled: false,
       heading: "My Recent Travels",
     },
     contact: {
-      order: 10, enabled: true,
+    order: 11, enabled: true,
       label: "Contact",
       heading: "Get in Touch",
       text: "Open to AI architecture, agentic systems, and AI engineering roles. Connect with me on LinkedIn or email me directly and I'll get back to you.",
@@ -119,7 +119,7 @@ export const DATA = {
     },
   ],
   contact: {
-    email: "hireme@brianmoir.dev",
+    email: "bmoirdev@gmail.com",
     tel: "",
     social: {
       GitHub: {
@@ -144,7 +144,7 @@ export const DATA = {
       },
       email: {
         name: "Send Email",
-        url: "mailto:hireme@brianmoir.dev",
+        url: "mailto:bmoirdev@gmail.com",
         icon: Icons.email,
         navbar: true,
         hoverBg: "#10b981",
