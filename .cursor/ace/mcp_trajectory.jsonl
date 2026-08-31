@@ -61,3 +61,4 @@
 {"event": "post_tool_use", "tool_type": "unknown", "tool_name": "Read", "tool_input": "{"file_path":"/Users/bmoir/Documents/GitHub/portfolio-app-bmoir/bmoir-portfolio-app/src/styles/global.css"}", "tool_output": "{"file_path":"/Users/bmoir/Documents/GitHub/portfolio-app-bmoir/bmoir-portfolio-app/src/styles/global.css","content_length":8075}", "duration": 0.738, "timestamp": "2026-08-30T22:12:05-04:00"}
 {"event": "pre_tool_use", "tool_name": "Grep", "conv_id": "", "gen_id": "", "timestamp": "2026-08-30T22:12:16-04:00"}
 {"event": "post_tool_use", "tool_type": "unknown", "tool_name": "Grep", "tool_input": "{"pattern":"z-index","glob":"src/styles/global.css"}", "tool_output": "{"pattern":"z-index","success":true}", "duration": 18.98, "timestamp": "2026-08-30T22:12:16-04:00"}
+{"event": "tool_failure", "tool_type": "unknown", "tool_name": "Shell", "error_type": "unknown", "error_message": "Command was aborted", "timestamp": "2026-08-30T22:28:07-04:00"}

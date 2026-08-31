@@ -1,3 +1,46 @@
 {"event": "before_shell", "command": "pnpm astro check 2>&1 | tail -30", "timestamp": "2026-08-30T22:06:30-04:00"}
 {"event": "before_shell", "command": "kill 31392 2>/dev/null; sleep 1; pnpm exec tsc --noEmit -p tsconfig.json 2>&1 | head -40", "timestamp": "2026-08-30T22:13:48-04:00"}
 {"event": "before_shell", "command": "pnpm dev", "timestamp": "2026-08-30T22:15:32-04:00"}
+{"event": "before_shell", "command": "curl -s -o /dev/null -w "%{http_code}" http://localhost:4321/ --max-time 5; echo; lsof -iTCP:4321 -sTCP:LISTEN 2>/dev/null | head -5", "timestamp": "2026-08-30T22:18:16-04:00"}
+{"event": "before_shell", "command": "ps aux | grep -E "astro|workerd|wrangler" | grep -v grep | head -10; echo "---"; tail -c 2000 "/Users/bmoir/.cursor/projects/Users-bmoir-Documents-GitHub-portfolio-app-bmoir-bmoir-portfolio-app/terminals/980155.txt"", "timestamp": "2026-08-30T22:20:34-04:00"}
+{"event": "before_shell", "command": "kill -9 31429 31442 31557 2>/dev/null; ps -p 21243 >/dev/null 2>&1 && echo "21243 alive" || echo "21243 dead"; ps aux | grep -i "astro dev\|astro.mjs dev" | grep -v grep | head -3", "timestamp": "2026-08-30T22:20:47-04:00"}
+{"event": "before_shell", "command": "pnpm dev 2>&1", "timestamp": "2026-08-30T22:20:58-04:00"}
+{"event": "before_shell", "command": "cat "/Users/bmoir/.cursor/projects/Users-bmoir-Documents-GitHub-portfolio-app-bmoir-bmoir-portfolio-app/terminals/287941.txt"; echo "==="; ps aux | grep -E "astro|node.*dev" | grep -v grep | grep -v Cursor | head -5; echo "==="; nc -z localhost 4321 && echo "port 4321 OPEN" || echo "port 4321 closed"", "timestamp": "2026-08-30T22:22:44-04:00"}
+{"event": "before_shell", "command": "pgrep -P 80104 | head; echo "==="; sample 80104 3 2>/dev/null | head -60", "timestamp": "2026-08-30T22:22:56-04:00"}
+{"event": "before_shell", "command": "lsof -p 80104 2>/dev/null | grep -E "PIPE|FIFO|TCP|cwd" | head -15; echo "==="; ps -ef | awk '$3==80104 || $3==79953' | head", "timestamp": "2026-08-30T22:23:17-04:00"}
+{"event": "before_shell", "command": "kill -9 80104 79953 79895 2>/dev/null; sleep 1; ls node_modules/.bin/workerd 2>/dev/null; ls node_modules/workerd/bin 2>/dev/null | head -3; node -e "console.log(process.version)"", "timestamp": "2026-08-30T22:23:33-04:00"}
+{"event": "before_shell", "command": "ls node_modules/.bin/ | grep -E "wrangler|workerd|miniflare"; echo "==="; ls node_modules/@astrojs/cloudflare/package.json >/dev/null 2>&1 && node -p "require('./node_modules/@astrojs/cloudflare/package.json').version"; node -p "try{require('./node_modules/wrangler/package.json').version}catch(e){'no wrangler'}"; node -p "try{require('./node_modules/miniflare/package.json').version}catch(e){'no miniflare'}"", "timestamp": "2026-08-30T22:23:40-04:00"}
+{"event": "before_shell", "command": "ls node_modules/wrangler/node_modules 2>/dev/null | head; echo "==="; ls node_modules/.pnpm 2>/dev/null | grep -iE "workerd|miniflare" | head", "timestamp": "2026-08-30T22:23:45-04:00"}
+{"event": "before_shell", "command": "timeout 20 pnpm exec astro --version 2>&1; echo "exit: $?"", "timestamp": "2026-08-30T22:24:00-04:00"}
+{"event": "before_shell", "command": "perl -e 'alarm 20; exec @ARGV' pnpm exec astro --version 2>&1; echo "exit: $?"", "timestamp": "2026-08-30T22:24:06-04:00"}
+{"event": "before_shell", "command": "perl -e 'alarm 45; exec @ARGV' pnpm exec astro dev 2>&1 | head -40; echo "exit: $?"", "timestamp": "2026-08-30T22:24:13-04:00"}
+{"event": "before_shell", "command": "perl -e 'alarm 30; exec @ARGV' node -e "import('./astro.config.mjs').then(()=>{console.log('config ok');process.exit(0)}).catch(e=>{console.error(e);process.exit(1)})" 2>&1; echo "exit: $?"", "timestamp": "2026-08-30T22:25:32-04:00"}
+{"event": "before_shell", "command": "perl -e 'alarm 60; exec @ARGV' node --input-type=module -e "
+const mods = ['astro/config','@astrojs/cloudflare','@tailwindcss/vite','@astrojs/react','@astrojs/mdx','@astrojs/sitemap','remark-gfm','rehype-pretty-code','./src/lib/remark-code-meta.ts','./src/data/config.ts'];
+for (const m of mods) {
+  console.log('importing', m);
+  await import(m);
+  console.log('ok', m);
+}
+console.log('ALL OK'); process.exit(0);
+" 2>&1 | tail -25; echo "exit: $?"", "timestamp": "2026-08-30T22:26:14-04:00"}
+{"event": "before_shell", "command": "perl -e 'alarm 45; exec @ARGV' node --input-type=module -e "
+console.log('importing vite'); await import('vite'); console.log('vite ok');
+console.log('importing astro/config'); await import('astro/config'); console.log('astro/config ok');
+process.exit(0);
+" 2>&1 | tail -10; echo "exit: $?"", "timestamp": "2026-08-30T22:27:30-04:00"}
+{"event": "before_shell", "command": "perl -e 'alarm 40; exec @ARGV' node --input-type=module -e "
+import inspector from 'node:inspector';
+const session = new inspector.Session();
+session.connect();
+session.post('Debugger.enable', () => {});
+session.on('Debugger.paused', ({params}) => {
+  for (const f of params.callFrames.slice(0, 25)) {
+    console.log(f.functionName || '(anon)', '->', f.url.replace(/^.*node_modules/, 'node_modules'), f.lineNumber);
+  }
+  process.exit(0);
+});
+setTimeout(() => session.post('Debugger.pause', () => {}), 15000);
+await import('astro/config');
+console.log('import ok, no hang'); process.exit(0);
+" 2>&1 | tail -30; echo "exit: $?"", "timestamp": "2026-08-30T22:27:44-04:00"}
