@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { Badge } from "@/components/ui/badge";
+import { GlowingShadow } from "@/components/ui/glowing-shadow";
 import { Icons } from "@/components/icons";
-import { cn } from "@/lib/utils";
 import { ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 import Markdown from "react-markdown";
@@ -139,90 +139,87 @@ export function ProjectCard({
   }
 
   return (
-    <div
-      className={cn(
-        "flex flex-col h-full border border-border rounded-xl overflow-hidden hover:ring-2 cursor-pointer hover:ring-muted transition-all duration-200",
-        className
-      )}
-    >
-      <div className="relative shrink-0">
-        <a
-          href={detailHref}
-          className="block"
-          onClick={() => captureProjectClick(title, detailHref, "image")}
-        >
-          {video ? (
-            <video
-              src={video}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-48 object-cover"
-            />
-          ) : image ? (
-            <ProjectImage src={image} alt={title} />
-          ) : (
-            <ProjectGradient title={title} />
-          )}
-        </a>
-        {externalLinks.length > 0 && (
-          <div className="absolute top-2 right-2 flex flex-wrap gap-2">
-            {externalLinks.map((link, idx) => (
-              <a
-                href={link.href}
-                key={idx}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e: React.MouseEvent) => {
-                  e.stopPropagation();
-                  captureProjectClick(title, link.href, link.type);
-                }}
-              >
-                <Badge
-                  className="flex items-center gap-1.5 text-xs bg-black text-white hover:bg-black/90"
-                  variant="default"
-                >
-                  {link.icon}
-                  {link.type}
-                </Badge>
-              </a>
-            ))}
-          </div>
-        )}
-      </div>
-      <div className="p-6 flex flex-col gap-3 flex-1">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex flex-col gap-1">
-            <h3 className="font-semibold">{title}</h3>
-            <time className="text-xs text-muted-foreground">{dates}</time>
-          </div>
+    <GlowingShadow className={className}>
+      <div className="flex flex-col h-full w-full rounded-xl overflow-hidden cursor-pointer transition-all duration-200">
+        <div className="relative shrink-0">
           <a
             href={detailHref}
-            className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
-            aria-label={`Open ${title}`}
-            onClick={() => captureProjectClick(title, detailHref, "title")}
+            className="block"
+            onClick={() => captureProjectClick(title, detailHref, "image")}
           >
-            <ArrowUpRight className="h-4 w-4" aria-hidden />
+            {video ? (
+              <video
+                src={video}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-48 object-cover"
+              />
+            ) : image ? (
+              <ProjectImage src={image} alt={title} />
+            ) : (
+              <ProjectGradient title={title} />
+            )}
           </a>
+          {externalLinks.length > 0 && (
+            <div className="absolute top-2 right-2 flex flex-wrap gap-2">
+              {externalLinks.map((link, idx) => (
+                <a
+                  href={link.href}
+                  key={idx}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    captureProjectClick(title, link.href, link.type);
+                  }}
+                >
+                  <Badge
+                    className="flex items-center gap-1.5 text-xs bg-black text-white hover:bg-black/90"
+                    variant="default"
+                  >
+                    {link.icon}
+                    {link.type}
+                  </Badge>
+                </a>
+              ))}
+            </div>
+          )}
         </div>
-        <div className="text-xs flex-1 prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
-          <Markdown>{description}</Markdown>
-        </div>
-        {tags && tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-auto">
-            {tags.map((tag) => (
-              <Badge
-                key={tag}
-                className="text-[11px] font-medium border border-border h-6 w-fit px-2"
-                variant="outline"
-              >
-                {tag}
-              </Badge>
-            ))}
+        <div className="p-6 flex flex-col gap-3 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex flex-col gap-1">
+              <h3 className="font-semibold">{title}</h3>
+              <time className="text-xs text-muted-foreground">{dates}</time>
+            </div>
+            <a
+              href={detailHref}
+              className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+              aria-label={`Open ${title}`}
+              onClick={() => captureProjectClick(title, detailHref, "title")}
+            >
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
+            </a>
           </div>
-        )}
+          <div className="text-xs flex-1 prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
+            <Markdown>{description}</Markdown>
+          </div>
+          {tags && tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-auto">
+              {tags.map((tag) => (
+                <Badge
+                  key={tag}
+                  className="text-[11px] font-medium border border-border h-6 w-fit px-2"
+                  variant="outline"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </GlowingShadow>
   );
 }
