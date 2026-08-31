@@ -1,0 +1,2 @@
+{"event": "before_shell", "command": "pnpm astro check 2>&1 | tail -30", "timestamp": "2026-08-30T22:06:30-04:00"}
+{"event": "before_shell", "command": "kill 31392 2>/dev/null; sleep 1; pnpm exec tsc --noEmit -p tsconfig.json 2>&1 | head -40", "timestamp": "2026-08-30T22:13:48-04:00"}
