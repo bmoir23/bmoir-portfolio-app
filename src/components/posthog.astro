@@ -1,30 +1,33 @@
 ---
-// src/components/posthog.astro
-// PostHog analytics snippet for client-side tracking.
-// Uses is:inline to prevent Astro from processing the script.
+// Client-side PostHog. Prefer Vite-baked PUBLIC_* vars; fall back to Cloudflare
+// runtime vars from wrangler.jsonc so analytics still loads in Workers SSR.
+import { getEnv } from "@/lib/runtime-env";
+
+const apiKey =
+  (import.meta.env.PUBLIC_POSTHOG_API_KEY as string | undefined) ||
+  getEnv(Astro.locals, "PUBLIC_POSTHOG_API_KEY") ||
+  "";
+// Capture goes through the site's own first-party `/ingest` reverse proxy
+// (src/pages/ingest/[...path].ts) so tracker blockers can't drop browser
+// events by blocking the third-party posthog.com host.
+const apiHost =
+  (import.meta.env.PUBLIC_POSTHOG_HOST as string | undefined) ||
+  getEnv(Astro.locals, "PUBLIC_POSTHOG_HOST") ||
+  "/ingest";
 ---
-<script is:inline>
-    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group identify setPersonProperties setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags resetGroups onFeatureFlags addFeatureFlagsHandler onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-    posthog.init('phc_rbfxvmPhmR4yZyEhWD9dVj76eqe3hTttT74a5jEU6ZWG', {
-        api_host: 'https://b.brianmoir.dev',
-        defaults: '2026-05-30',
-        // Drop the benign "ResizeObserver loop completed with undelivered
-        // notifications." browser warning before it is captured as an error.
-        // It fires when a ResizeObserver callback can't deliver all of its
-        // notifications within one animation frame (triggered here by
-        // ResizeObserver-using UI deps such as Radix UI and motion). It is
-        // harmless noise, not a real bug, so we don't want it in error tracking.
-        before_send: function (event) {
-            if (event && event.event === '$exception') {
-                var exceptions = (event.properties && event.properties.$exception_list) || [];
-                var isResizeObserverLoop = exceptions.some(function (ex) {
-                    return ex && typeof ex.value === 'string' && ex.value.indexOf('ResizeObserver loop') !== -1;
-                });
-                if (isResizeObserverLoop) {
-                    return null;
-                }
-            }
-            return event;
-        }
-    })
-</script>
+
+{
+  apiKey ? (
+    <script
+      is:inline
+      define:vars={{ apiKey, apiHost }}
+    >
+      !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group identify setPersonProperties setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags resetGroups onFeatureFlags addFeatureFlagsHandler onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+      posthog.init(apiKey, {
+        api_host: apiHost,
+        ui_host: "https://us.posthog.com",
+        defaults: "2026-05-30",
+      });
+    </script>
+  ) : null
+}
