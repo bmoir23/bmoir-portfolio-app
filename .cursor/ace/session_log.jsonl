@@ -1,2 +1,6 @@
 {"session_id": "86244285-bf5d-40af-83b2-872a1411f661", "reason": "user_close", "duration_ms": 0, "trajectory": {"mcp": , "shell": , "edits": , "responses": }, "ended_at": "2026-08-23T20:52:49-04:00"}
 {"session_id": "2729030d-2354-44cf-a942-b70aca27beb9", "reason": "user_close", "duration_ms": 0, "trajectory": {"mcp": , "shell": , "edits": , "responses": }, "ended_at": "2026-08-23T20:52:49-04:00"}
+{"session_id": "2729030d-2354-44cf-a942-b70aca27beb9", "reason": "user_close", "duration_ms": 0, "trajectory": {"mcp": , "shell": , "edits": , "responses": 38}, "ended_at": "2026-08-24T19:40:00-04:00"}
+{"session_id": "86244285-bf5d-40af-83b2-872a1411f661", "reason": "user_close", "duration_ms": 0, "trajectory": {"mcp": , "shell": , "edits": , "responses": 38}, "ended_at": "2026-08-24T19:40:03-04:00"}
+{"session_id": "d320cc5c-00ac-40b6-a4a8-bbd44b87bc8f", "reason": "user_close", "duration_ms": 0, "trajectory": {"mcp": 0, "shell": 0, "edits": 0, "responses": 0}, "ended_at": "2026-08-30T21:52:10-04:00"}
+{"session_id": "055e466c-d153-40b5-9a34-dddcaa0cf055", "reason": "user_close", "duration_ms": 0, "trajectory": {"mcp": 0, "shell": 0, "edits": 0, "responses": 0}, "ended_at": "2026-08-30T21:52:11-04:00"}

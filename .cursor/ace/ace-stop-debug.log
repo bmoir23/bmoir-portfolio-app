@@ -1,0 +1,4 @@
+2026-08-23T20:55:40-04:00 STOP_FIRED status=aborted conv=d320cc5c-00ac-40b6-a4a8-bbd44b87bc8f loop=0
+2026-08-23T20:55:40-04:00 STOP_SKIP reason=status_not_completed status=aborted conv=d320cc5c-00ac-40b6-a4a8-bbd44b87bc8f loop=0
+2026-08-30T22:28:08-04:00 STOP_FIRED status=aborted conv=87870fc8-2495-46a4-998d-9f9b22b6045f loop=0
+2026-08-30T22:28:08-04:00 STOP_SKIP reason=status_not_completed status=aborted conv=87870fc8-2495-46a4-998d-9f9b22b6045f loop=0
