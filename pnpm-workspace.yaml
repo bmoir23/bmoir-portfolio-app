@@ -1,0 +1,19 @@
+# Single-package workspace. Cloudflare's build image (pnpm 10) errors with
+# "packages field missing or empty" if that key is absent. Local pnpm 11+
+# may append allowBuilds placeholders — replace those with true before commit.
+packages:
+  - '.'
+
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - workerd
+
+allowBuilds:
+  esbuild: true
+  sharp: true
+  workerd: true
+
+peerDependencyRules:
+  allowedVersions:
+    tsconfck>typescript: '6'

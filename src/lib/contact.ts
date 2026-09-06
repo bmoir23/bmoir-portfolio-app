@@ -18,6 +18,7 @@ export type ContactPayload = {
   email: string;
   subject?: string;
   message: string;
+  turnstileToken?: string;
 };
 
 export type ContactResult = {
@@ -28,6 +29,68 @@ export type ContactResult = {
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Verify a Cloudflare Turnstile token server-side.
+ *
+ * Posts the token (plus the visitor's IP for the audit log) to Cloudflare's
+ * siteverify endpoint. Returns `{ ok: true }` when:
+ *   - no `TURNSTILE_SECRET_KEY` is configured (dev mode — verification skipped), or
+ *   - Cloudflare reports `success: true`.
+ *
+ * Returns `{ ok: false, error }` when:
+ *   - a secret key IS configured but no token was supplied, or
+ *   - Cloudflare rejects the token.
+ */
+export async function verifyTurnstile(
+  locals: Locals,
+  token: string | undefined,
+  remoteip?: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const secret = getEnv(locals, "TURNSTILE_SECRET_KEY");
+  if (!secret) {
+    // Dev mode: no secret configured → skip verification.
+    return { ok: true };
+  }
+  if (!token) {
+    return { ok: false, error: "Please complete the security check." };
+  }
+
+  try {
+    const params = new URLSearchParams();
+    params.set("secret", secret);
+    params.set("response", token);
+    if (remoteip) params.set("remoteip", remoteip);
+
+    const res = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString(),
+      },
+    );
+    const data = (await res.json().catch(() => ({}))) as {
+      success?: boolean;
+      "error-codes"?: string[];
+    };
+    if (!data.success) {
+      const codes = data["error-codes"]?.length
+        ? ` (${data["error-codes"].join(", ")})`
+        : "";
+      return {
+        ok: false,
+        error: `Security check failed${codes}. Please try again.`,
+      };
+    }
+    return { ok: true };
+  } catch {
+    return {
+      ok: false,
+      error: "Could not verify security check. Please try again.",
+    };
+  }
+}
 
 export function validateContact(input: unknown):
   | { ok: true; data: ContactPayload }
@@ -41,6 +104,8 @@ export function validateContact(input: unknown):
   const subject =
     typeof body.subject === "string" ? body.subject.trim() : undefined;
   const message = typeof body.message === "string" ? body.message.trim() : "";
+  const turnstileToken =
+    typeof body.turnstileToken === "string" ? body.turnstileToken.trim() : undefined;
 
   if (name.length < 1 || name.length > 200) {
     return { ok: false, error: "Please enter your name." };
@@ -55,7 +120,10 @@ export function validateContact(input: unknown):
     return { ok: false, error: "Subject is too long." };
   }
 
-  return { ok: true, data: { name, email, subject, message } };
+  return {
+    ok: true,
+    data: { name, email, subject, message, turnstileToken },
+  };
 }
 
 type Locals = unknown;

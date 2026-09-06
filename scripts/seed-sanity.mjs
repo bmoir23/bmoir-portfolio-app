@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * Seed Sanity with projects + sample post from sanity/seed/*.ndjson
+ * Seed Sanity with projects + sample posts from sanity/seed/*.ndjson
  *
  * Requires a token with write access:
  *   SANITY_API_TOKEN=... node scripts/seed-sanity.mjs
  *
- * Or after `sanity login` from bmoir-dev-portfolio:
- *   cd bmoir-dev-portfolio && pnpm seed
+ * Or after `sanity login` from the studio folder:
+ *   cd sanity && pnpm seed
  */
 import { createClient } from "@sanity/client";
 import { readFileSync } from "node:fs";
@@ -23,7 +23,7 @@ const token = process.env.SANITY_API_TOKEN;
 if (!token) {
   console.error(
     "SANITY_API_TOKEN is required for seeding. Run `sanity login` and use:\n" +
-      "  cd bmoir-dev-portfolio && pnpm seed\n" +
+      "  cd sanity && pnpm seed\n" +
       "Or set SANITY_API_TOKEN with a write-capable token.",
   );
   process.exit(1);

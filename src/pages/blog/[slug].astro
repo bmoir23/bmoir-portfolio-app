@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { DATA } from "@/data/resume";
 import BlogPostBody from "@/components/blog-post-body";
 import { createPosthogClient } from "@/lib/posthog";
+import BackButton from "@/components/ui/back-button.astro";
 
 export const prerender = false;
 
@@ -62,13 +63,7 @@ try {
 <Layout title={post.title} description={post.excerpt} image={post.coverImageUrl}>
   <main class="min-h-dvh flex flex-col gap-8">
     <section class="flex items-center justify-between pt-2">
-      <a
-        href="/blog"
-        class="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <ArrowLeft className="h-4 w-4" aria-hidden />
-        Back to blog
-      </a>
+      <BackButton href="/blog" label="Back" class="text-muted-foreground hover:text-foreground" />
       <a
         href="/"
         class="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"

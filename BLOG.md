@@ -33,8 +33,8 @@ Cloudflare Pages/Workers project dashboard (or via `wrangler secret put`).
 ## 3. Set up the Sanity Studio
 
 The canonical schemas live in [`sanity/schemas/`](./sanity/schemas/) (`post.ts` +
-`project.ts`). The deployed studio is in
-[`bmoir-dev-portfolio/`](./bmoir-dev-portfolio/) and is already wired to:
+`project.ts`). The deployed studio is also in [`sanity/`](./sanity/) and is
+already wired to:
 
 | Setting | Value |
 | --- | --- |
@@ -44,15 +44,15 @@ The canonical schemas live in [`sanity/schemas/`](./sanity/schemas/) (`post.ts` 
 From the studio folder:
 
 ```bash
-cd bmoir-dev-portfolio
+cd sanity
 pnpm install
 pnpm dev          # local studio at http://localhost:3333
 pnpm deploy       # deploy hosted studio (after `sanity login`)
 ```
 
-Register schemas in `bmoir-dev-portfolio/schemaTypes/index.ts` — the studio
-imports `project` from `sanity/schemas/project.ts` and uses the local `post`
-and `author` types that match the portfolio app.
+Schemas are registered in `sanity/sanity.config.ts` — the studio imports
+`post` and `author` from `sanity/schemas/post.ts` and `project` from
+`sanity/schemas/project.ts` so there is a single source of truth.
 
 Required post fields: `title`, `slug`, `publishedAt`. Recommended: `excerpt`,
 `bodyMarkdown` (Markdown), `coverImage`, `tags`.
@@ -103,18 +103,17 @@ post is in [`sanity/seed/posts.ndjson`](./sanity/seed/posts.ndjson). Import
 from the studio folder (requires `sanity login`):
 
 ```bash
-cd bmoir-dev-portfolio
-pnpm seed              # imports projects + sample post
+cd sanity
+pnpm seed              # imports projects + sample posts
 # or individually:
 pnpm seed:projects
 pnpm seed:posts
 ```
 
-Equivalent manual command:
+Equivalent from the repo root:
 
 ```bash
-sanity dataset import ../sanity/seed/projects.ndjson portoflio-dev-blog --replace
-sanity dataset import ../sanity/seed/posts.ndjson portoflio-dev-blog --replace
+SANITY_API_TOKEN=... pnpm seed:sanity
 ```
 
 Then edit each document in the Studio — in particular fill in the

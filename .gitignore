@@ -36,3 +36,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Non-standard env dump (use .env / .dev.vars instead)
+env.local
