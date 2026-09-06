@@ -1,0 +1,10 @@
+---
+description: ACE Pattern Learning - call ace_search first with the user's task as query
+globs: ["**/*"]
+---
+
+# ACE Pattern Search
+
+For every user prompt, the FIRST tool call MUST be `ace_search(query="<user's task>")`.
+
+Use the user's prompt directly as the query. Do NOT explore the filesystem first. Once results return, apply the patterns to your work.

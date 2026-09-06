@@ -5,15 +5,24 @@ import { CONFIG } from "@/data/config";
 import ContactForm from "@/components/contact-form";
 import ContactSocials from "@/components/contact-socials";
 import CalEmbed from "@/components/CalEmbed.astro";
-import { ArrowLeft, Mail, MapPin, CalendarClock } from "lucide-react";
+import BackButton from "@/components/ui/back-button.astro";
+import { getEnv } from "@/lib/runtime-env";
+import { Mail, MapPin, CalendarClock } from "lucide-react";
 
 export const prerender = false;
 
 const calLink = CONFIG.contact.calLink;
+const turnstileSiteKey =
+  (import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined) ||
+  getEnv(Astro.locals, "PUBLIC_TURNSTILE_SITE_KEY");
 ---
 
 <Layout title="Contact">
   <main class="min-h-dvh flex flex-col gap-12">
+    <div class="pt-2">
+      <BackButton href="/" label="Back" />
+    </div>
+
     <section class="flex flex-col gap-y-3 items-center justify-center pt-4">
       <div class="flex items-center w-full">
         <div class="flex-1 h-px bg-linear-to-r from-transparent from-5% via-border via-95% to-transparent"></div>
@@ -39,7 +48,7 @@ const calLink = CONFIG.contact.calLink;
             Fill out the form and it'll land straight in my inbox.
           </p>
         </div>
-        <ContactForm client:load />
+        <ContactForm client:load siteKey={turnstileSiteKey} />
       </div>
 
       <!-- Connect / socials -->
@@ -80,14 +89,5 @@ const calLink = CONFIG.contact.calLink;
       </section>
     )}
 
-    <div class="flex justify-center pt-2">
-      <a
-        href="/"
-        class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-      >
-        <ArrowLeft className="size-4" />
-        Back to home
-      </a>
-    </div>
   </main>
 </Layout>

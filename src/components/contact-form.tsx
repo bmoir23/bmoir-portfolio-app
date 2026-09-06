@@ -10,20 +10,25 @@ type Status = "idle" | "submitting" | "success" | "error";
 const FIELD_CLASS =
   "w-full rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-60";
 
-// Public site key — safe to expose in the client bundle. Set
-// `PUBLIC_TURNSTILE_SITE_KEY` in `.env` (Vite reads it at build time). When
-// unset, the widget is skipped and server-side verification is also bypassed
-// (dev mode). Cloudflare's "always passes" test key is `1x00000000000000000000AA`.
-const TURNSTILE_SITE_KEY = import.meta.env
+// Public site key — safe to expose in the client bundle. Prefer the `siteKey`
+// prop (passed from the SSR page via Cloudflare runtime vars); fall back to
+// the Vite-baked `PUBLIC_TURNSTILE_SITE_KEY`. When unset, the widget is skipped
+// and server-side verification is also bypassed if no secret is configured.
+const ENV_TURNSTILE_SITE_KEY = import.meta.env
   .PUBLIC_TURNSTILE_SITE_KEY as string | undefined;
 
-export default function ContactForm() {
+type ContactFormProps = {
+  siteKey?: string;
+};
+
+export default function ContactForm({ siteKey }: ContactFormProps) {
+  const turnstileSiteKey = siteKey || ENV_TURNSTILE_SITE_KEY;
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const turnstileRef = useRef<TurnstileRef | null>(null);
 
-  const turnstileRequired = Boolean(TURNSTILE_SITE_KEY);
+  const turnstileRequired = Boolean(turnstileSiteKey);
   const turnstileMissing = turnstileRequired && !turnstileToken;
 
   async function submit(form: HTMLFormElement) {
@@ -178,11 +183,11 @@ export default function ContactForm() {
         />
       </div>
 
-      {TURNSTILE_SITE_KEY && (
+      {turnstileSiteKey && (
         <div className="flex flex-col gap-1.5">
           <Turnstile
             ref={turnstileRef}
-            siteKey={TURNSTILE_SITE_KEY}
+            siteKey={turnstileSiteKey}
             onToken={setTurnstileToken}
             onExpire={() => setTurnstileToken(null)}
             onError={() => setTurnstileToken(null)}

@@ -19,7 +19,13 @@
 		"SANITY_PROJECT_ID": "cv6an3n5",
 		"SANITY_DATASET": "portoflio-dev-blog",
 		"SANITY_API_VERSION": "2024-10-01",
-		"POSTHOG_HOST": "https://us.i.posthog.com"
+		"POSTHOG_HOST": "https://us.i.posthog.com",
+		// Public client keys (safe to commit). Also set these as Cloudflare
+		// Workers Builds environment variables so Vite can bake PUBLIC_* into
+		// the client bundle at build time.
+		"PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAADvDvwh3dn8mKvhK",
+		"PUBLIC_POSTHOG_API_KEY": "phc_rbfxvmPhmR4yZyEhWD9dVj76eqe3hTttT74a5jEU6ZWG",
+		"PUBLIC_POSTHOG_HOST": "https://us.i.posthog.com"
 	},
 	"ai": {
 		  "binding": "AI"

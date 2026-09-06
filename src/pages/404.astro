@@ -2,10 +2,14 @@
 export const prerender = true;
 import Layout from "@/layouts/Layout.astro";
 import { Home } from "lucide-react";
+import BackButton from "@/components/ui/back-button.astro";
 ---
 
 <Layout title="404 - Page Not Found">
   <div class="min-h-[calc(100vh-12rem)] flex flex-col">
+    <div class="pt-2">
+      <BackButton href="/" label="Back" />
+    </div>
     <div class="flex-1 flex items-center justify-center p-8">
       <div class="flex flex-col items-center text-center max-w-md relative">
         <h1 class="text-[200px] font-semibold font-mono bg-linear-to-b from-primary/30 to-secondary/10 text-transparent bg-clip-text absolute -top-40 left-1/2 -translate-x-1/2 mask-[linear-gradient(to_bottom,black,black_20%,transparent_80%)] tracking-tighter uppercase [-webkit-text-stroke:3px_hsl(var(--primary)/0.6)]">
