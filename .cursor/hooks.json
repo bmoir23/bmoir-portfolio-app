@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": ".cursor/scripts/ace_session_start.sh"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": ".cursor/scripts/ace_session_end.sh"
+      }
+    ],
+    "afterMCPExecution": [
+      {
+        "command": ".cursor/scripts/ace_track_mcp.sh"
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": ".cursor/scripts/ace_domain_shift.sh"
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/scripts/ace_stop_hook.sh",
+        "loop_limit": null
+      }
+    ],
+    "preCompact": [
+      {
+        "command": ".cursor/scripts/ace_pre_compact.sh"
+      }
+    ],
+    "subagentStart": [
+      {
+        "command": ".cursor/scripts/ace_subagent_start.sh",
+        "matcher": ".*"
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": ".cursor/scripts/ace_subagent_stop.sh"
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": ".cursor/scripts/ace_pre_tool_use.sh"
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": ".cursor/scripts/ace_post_tool_use.sh"
+      }
+    ],
+    "postToolUseFailure": [
+      {
+        "command": ".cursor/scripts/ace_post_tool_use_failure.sh"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": ".cursor/scripts/ace_before_shell.sh",
+        "matcher": ".*"
+      }
+    ],
+    "beforeMCPExecution": [
+      {
+        "command": ".cursor/scripts/ace_before_mcp.sh"
+      }
+    ],
+    "beforeReadFile": [
+      {
+        "command": ".cursor/scripts/ace_before_read_file.sh"
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": ".cursor/scripts/ace_before_submit_prompt.sh",
+        "timeout": 5000
+      }
+    ],
+    "afterAgentThought": [
+      {
+        "command": ".cursor/scripts/ace_after_agent_thought.sh"
+      }
+    ],
+    "beforeTabFileRead": [
+      {
+        "command": ".cursor/scripts/ace_before_tab_file_read.sh"
+      }
+    ],
+    "afterTabFileEdit": [
+      {
+        "command": ".cursor/scripts/ace_after_tab_file_edit.sh"
+      }
+    ]
+  }
+}

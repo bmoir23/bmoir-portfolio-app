@@ -7,11 +7,10 @@
   ],
   "exclude": [
     "dist",
-    "node_modules"
+    "node_modules",
+    "sanity"
   ],
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"

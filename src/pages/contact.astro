@@ -1,0 +1,93 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { DATA } from "@/data/resume";
+import { CONFIG } from "@/data/config";
+import ContactForm from "@/components/contact-form";
+import ContactSocials from "@/components/contact-socials";
+import CalEmbed from "@/components/CalEmbed.astro";
+import BackButton from "@/components/ui/back-button.astro";
+import { getEnv } from "@/lib/runtime-env";
+import { Mail, MapPin, CalendarClock } from "lucide-react";
+
+export const prerender = false;
+
+const calLink = CONFIG.contact.calLink;
+const turnstileSiteKey =
+  (import.meta.env.PUBLIC_TURNSTILE_SITE_KEY as string | undefined) ||
+  getEnv(Astro.locals, "PUBLIC_TURNSTILE_SITE_KEY");
+---
+
+<Layout title="Contact">
+  <main class="min-h-dvh flex flex-col gap-12">
+    <div class="pt-2">
+      <BackButton href="/" label="Back" />
+    </div>
+
+    <section class="flex flex-col gap-y-3 items-center justify-center pt-4">
+      <div class="flex items-center w-full">
+        <div class="flex-1 h-px bg-linear-to-r from-transparent from-5% via-border via-95% to-transparent"></div>
+        <div class="border bg-primary z-10 rounded-xl px-4 py-1">
+          <span class="text-background text-sm font-medium">{DATA.sections.contact.label}</span>
+        </div>
+        <div class="flex-1 h-px bg-linear-to-l from-transparent from-5% via-border via-95% to-transparent"></div>
+      </div>
+      <h1 class="text-3xl font-bold tracking-tighter sm:text-4xl">Get in Touch</h1>
+      <p class="text-muted-foreground md:text-lg/relaxed lg:text-base/relaxed text-balance text-center max-w-xl">
+        Have a project, role, or idea in mind? Leave me a message, book a call, or
+        reach out on any of the platforms below.
+      </p>
+    </section>
+
+    <!-- Message form + connect column -->
+    <section class="grid grid-cols-1 gap-6 lg:grid-cols-5">
+      <!-- Leave a message -->
+      <div class="lg:col-span-3 rounded-2xl border border-border bg-card p-6 sm:p-8">
+        <div class="mb-6 flex flex-col gap-1">
+          <h2 class="text-xl font-bold">Leave a message</h2>
+          <p class="text-sm text-muted-foreground">
+            Fill out the form and it'll land straight in my inbox.
+          </p>
+        </div>
+        <ContactForm client:load siteKey={turnstileSiteKey} />
+      </div>
+
+      <!-- Connect / socials -->
+      <div class="lg:col-span-2 flex flex-col gap-6">
+        <div class="rounded-2xl border border-border bg-card p-6 sm:p-8">
+          <h2 class="mb-4 text-xl font-bold">Connect</h2>
+          <ContactSocials />
+        </div>
+
+        <div class="rounded-2xl border border-border bg-card p-6 sm:p-8 flex flex-col gap-4">
+          <a
+            href={`mailto:${DATA.contact.email}`}
+            class="group flex items-center gap-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <span class="grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-background">
+              <Mail className="size-4" />
+            </span>
+            <span class="break-all">{DATA.contact.email}</span>
+          </a>
+          <div class="flex items-center gap-3 text-sm text-muted-foreground">
+            <span class="grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-background">
+              <MapPin className="size-4" />
+            </span>
+            <span>{DATA.location}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cal.com scheduling widget -->
+    {calLink && (
+      <section class="flex flex-col gap-4">
+        <div class="flex items-center gap-2">
+          <CalendarClock className="size-5 text-muted-foreground" />
+          <h2 class="text-xl font-bold">Prefer to talk? Book a call</h2>
+        </div>
+        <CalEmbed calLink={calLink} layout={CONFIG.contact.calLayout} />
+      </section>
+    )}
+
+  </main>
+</Layout>

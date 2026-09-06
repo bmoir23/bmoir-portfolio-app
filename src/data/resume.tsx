@@ -9,6 +9,8 @@ import {
   Cloud,
   Server,
   BrainCircuit,
+  BookOpen,
+  Mail,
 } from "lucide-react";
 import { ReactLight } from "@/components/ui/svgs/reactLight";
 import { NextjsIconDark } from "@/components/ui/svgs/nextjsIconDark";
@@ -27,34 +29,46 @@ export const DATA = {
   description:
     "AI Solutions Architect specializing in multi-agent systems, RAG pipelines, and enterprise AI orchestration.",
   summary:
-    "I'm the CTO & Principal AI Architect at [Liink'd](/#work), where I designed the Syncc Executive Agent OS — a production multi-agent AI platform built on LangChain orchestration, the MCP protocol, n8n agentic workflows, and vector database retrieval. I bring [7+ years of customer-facing technical experience](/#work) across SaaS, enterprise solutions, and platform consulting, and I'm currently [advancing my studies in Computer Science & AI Engineering at the University of Maryland](/#education). I specialize in [agentic system design, advanced prompt engineering, and AI orchestration](/#skills) on modern cloud infrastructure including GCP and Vertex AI.",
+    "I'm the CTO & Principal AI Architect at [Liink'd](/#work), where I designed the Syncc Executive Agent OS — a production multi-agent platform built on LangChain orchestration, the MCP protocol, n8n agentic workflows, and vector database retrieval. I bring [10+ years of technical leadership across SaaS and enterprise platforms](/#work), owning product strategy, delivery execution, and cross-functional roadmap alignment from discovery to launch. I specialize in [LLM platform design, multi-agent orchestration, and enterprise AI operating models](/#skills), including evaluation frameworks, governance controls, observability, and scale-ready cloud deployment across GCP and Vertex AI.",
   avatarUrl: "/brian-moir.png",
   resumeUrl:
     "https://docs.google.com/document/d/1b1bkDDj_6spetyCchz22X0rbsx7bbKB1bb2YbwD3JYI/edit?usp=sharing",
   ogImage: "/og_image.png",
   sections: {
-    about: { order: 1, enabled: true, heading: "About" },
-    work: { order: 2, enabled: true, heading: "Work Experience", presentLabel: "Present" },
-    education: { order: 3, enabled: true, heading: "Education & Certifications" },
-    skills: { order: 4, enabled: true, heading: "Skills" },
+    githubActivity: {
+    order: 5, enabled: true,
+      label: "Coding Activity",
+      heading: "GitHub Activity Graph",
+      text: "My contribution graph over the last year. Flip on Game Mode to blast through it retro-space-shooter style.",
+    },
+    about: { order: 2, enabled: true, heading: "About" },
+    work: { order: 3, enabled: true, heading: "Work Experience", presentLabel: "Present" },
+    education: { order: 4, enabled: true, heading: "Education & Certifications" },
+  skills: { order: 6, enabled: true, heading: "Skills" },
     projects: {
-      order: 5, enabled: true,
+    order: 7, enabled: true,
       label: "My Work",
       heading: "Things I've architected & shipped",
       text: "A selection of AI platforms and pipelines I've designed and built — from multi-agent orchestration systems to production RAG and data-extraction infrastructure.",
     },
+    blog: {
+    order: 8, enabled: true,
+      label: "Writing",
+      heading: "From the Blog",
+      text: "Notes, deep dives, and lessons from building AI platforms, agentic systems, and developer infrastructure.",
+    },
     hackathons: {
-      order: 7, enabled: false,
+    order: 10, enabled: false,
       label: "Hackathons",
       heading: "I like building things",
       text: "",
     },
     photos: {
-      order: 6, enabled: false,
+    order: 9, enabled: false,
       heading: "My Recent Travels",
     },
     contact: {
-      order: 8, enabled: true,
+    order: 11, enabled: true,
       label: "Contact",
       heading: "Get in Touch",
       text: "Open to AI architecture, agentic systems, and AI engineering roles. Connect with me on LinkedIn or email me directly and I'll get back to you.",
@@ -85,9 +99,27 @@ export const DATA = {
   ],
   navbar: [
     { href: "/", icon: House, label: "Home" },
+    {
+      href: "/blog",
+      icon: BookOpen,
+      label: "Blog",
+      hoverBg: "#ec4899",
+      hoverFg: "#ffffff",
+      hoverBgDark: "#f43f5e",
+      hoverFgDark: "#ffffff",
+    },
+    {
+      href: "/contact",
+      icon: Mail,
+      label: "Contact",
+      hoverBg: "#10b981",
+      hoverFg: "#ffffff",
+      hoverBgDark: "#34d399",
+      hoverFgDark: "#052e1f",
+    },
   ],
   contact: {
-    email: "hireme@brianmoir.dev",
+    email: "bmoirdev@gmail.com",
     tel: "",
     social: {
       GitHub: {
@@ -95,18 +127,30 @@ export const DATA = {
         url: "https://github.com/bmoir23",
         icon: Icons.github,
         navbar: true,
+        hoverBg: "#000000",
+        hoverFg: "#ffffff",
+        hoverBgDark: "#ffffff",
+        hoverFgDark: "#000000",
       },
       LinkedIn: {
         name: "LinkedIn",
         url: "https://linkedin.com/in/brian-moir",
         icon: Icons.linkedin,
         navbar: true,
+        hoverBg: "#0a66c2",
+        hoverFg: "#ffffff",
+        hoverBgDark: "#0a66c2",
+        hoverFgDark: "#ffffff",
       },
       email: {
         name: "Send Email",
-        url: "mailto:hireme@brianmoir.dev",
+        url: "mailto:bmoirdev@gmail.com",
         icon: Icons.email,
         navbar: true,
+        hoverBg: "#10b981",
+        hoverFg: "#ffffff",
+        hoverBgDark: "#34d399",
+        hoverFgDark: "#052e1f",
       },
     },
   },
@@ -119,7 +163,7 @@ export const DATA = {
       location: "Knoxville, TN (Remote)",
       title: "CTO & Principal AI Architect",
       logoUrl: "https://www.google.com/s2/favicons?domain=liinkd.xyz&sz=128",
-      start: "January 2023",
+      start: "January 2025",
       end: undefined,
       description:
         "Lead all technical strategy, AI architecture, and platform engineering for a creator-infrastructure startup building agentic AI tooling. Architected the Syncc Executive Agent OS — a production multi-agent AI platform integrating LangChain orchestration, MCP servers, n8n automation, and vector retrieval with configurable human-in-the-loop oversight and behavioral governance. Designed RAG document Q&A pipelines with DeepEval-based evaluation, a Terraform/AWS Lambda structured data-extraction pipeline, and advanced prompt-engineering frameworks across GPT-4, Claude, and open-source models. Established MLOps standards with AI Gateway routing for cost governance, observability, and latency optimization across cloud providers.",
@@ -132,7 +176,7 @@ export const DATA = {
       title: "Customer Success & Technical Solutions Manager",
       logoUrl: "https://www.google.com/s2/favicons?domain=benzinga.com&sz=128",
       start: "January 2020",
-      end: "May 2022",
+      end: "May 2023",
       description:
         "Served as the primary technical bridge between enterprise customers and core engineering teams for a leading financial data and trading SaaS platform. Ran end-to-end technical discovery with enterprise clients, translating complex trading and data requirements into integration roadmaps that drove churn reduction and expansion revenue. Architected an in-house customer-facing ticketing and feedback system for feature tracking, real-time bug triage, and CX analytics. Led CXO-level technical pursuits as the SME during sales cycles, and expanded the Web3/blockchain vertical to 100K+ subscribers and 1M+ views.",
     },
@@ -143,22 +187,22 @@ export const DATA = {
       location: "New York, NY (Remote)",
       title: "Customer Success Manager & Project Manager",
       logoUrl: "https://www.google.com/s2/favicons?domain=storetasker.com&sz=128",
-      start: "August 2019",
+      start: "August 2018",
       end: "January 2020",
       description:
         "Managed technical project scoping and expert-client matching on a Shopify development marketplace, overseeing end-to-end delivery of web development and e-commerce integration engagements across a network of 200+ developers. Resolved complex platform escalations, defined SOPs for technical quality review, and partnered with the Director of Operations on workflow optimization and capacity planning.",
     },
     {
-      company: "Ketamine Media / Upwork",
+      company: "Freelance Contractor / Upwork",
       href: "https://www.upwork.com",
       badges: ["Freelance"],
       location: "Remote",
-      title: "Full-Stack Developer & Digital Marketing Consultant",
+      title: "Full-Stack Developer | Digital Marketing Consultant | AI/ ML Enablement Consultant and Engineer| Automation and Sytem Flows Engineer",
       logoUrl: "https://www.google.com/s2/favicons?domain=upwork.com&sz=128",
-      start: "January 2018",
-      end: "December 2020",
+      start: "January 2015",
+      end: "Ongoing",
       description:
-        "Built custom WordPress themes, RESTful API integrations, and client-side JavaScript/React applications. Managed Google Ads campaigns, SEO strategy, and PPC optimization across multiple client accounts.",
+        "Built custom WordPress/ Shopify/ Wix/ Webflow themes and client websites, built RESTful API integrations, built and updated client-side JavaScript/React applications. Managed Google Ads campaigns, digital marketing campaigns, project management, SEO strategy, and PPC optimization across multiple client accounts.",
     },
   ],
   education: [
@@ -168,7 +212,7 @@ export const DATA = {
       degree: "B.S. Computer Science — AI Engineering",
       logoUrl: "https://www.google.com/s2/favicons?domain=umd.edu&sz=128",
       start: "2023",
-      end: "Present",
+      end: "May 2026",
     },
     {
       school: "Coursera",
@@ -211,90 +255,8 @@ export const DATA = {
       end: "",
     },
   ],
-  projects: [
-    {
-      title: "Syncc Executive Agent OS",
-      href: "https://get.liinkd.xyz",
-      dates: "2023 - Present",
-      active: true,
-      description:
-        "A production-grade multi-agent AI platform enabling enterprise autonomous task execution. Integrates LangChain orchestration, MCP servers, n8n automation, and vector retrieval, with configurable human-in-the-loop oversight, behavioral governance, and AI Gateway routing for cost and latency control.",
-      technologies: [
-        "LangChain",
-        "MCP Protocol",
-        "n8n",
-        "Next.js 15",
-        "Supabase",
-        "Cloudflare Workers",
-        "AI Gateway",
-        "Vector DB",
-      ],
-      links: [
-        {
-          type: "Website",
-          href: "https://get.liinkd.xyz",
-          icon: <Icons.globe className="size-3" />,
-        },
-      ],
-      image: "",
-      video: "",
-    },
-    {
-      title: "RAG Document Q&A Pipeline",
-      href: "https://get.liinkd.xyz",
-      dates: "2024",
-      active: true,
-      description:
-        "A retrieval-augmented generation pipeline for high-fidelity enterprise knowledge extraction, built with a DeepEval-based evaluation framework. Implements OpenAI embeddings, cosine-similarity search, and tuned chunking strategies for accurate, grounded document Q&A.",
-      technologies: [
-        "Python",
-        "LangChain",
-        "OpenAI Embeddings",
-        "DeepEval",
-        "Vector DB",
-        "RAG",
-      ],
-      links: [],
-      image: "",
-      video: "",
-    },
-    {
-      title: "Structured Data Extraction Pipeline",
-      href: "https://get.liinkd.xyz",
-      dates: "2024",
-      active: true,
-      description:
-        "An MLOps-style pipeline that turns unstructured inputs into governed, schema-validated data outputs. Runs on AWS Lambda with Terraform infrastructure-as-code, automated quality controls, and CI/CD deployment — analogous to production data-orchestration patterns.",
-      technologies: [
-        "AWS Lambda",
-        "Terraform",
-        "Python",
-        "CI/CD",
-        "Schema Validation",
-      ],
-      links: [],
-      image: "",
-      video: "",
-    },
-    {
-      title: "MCP Enterprise Integration Layer",
-      href: "https://get.liinkd.xyz",
-      dates: "2024",
-      active: true,
-      description:
-        "An integration layer built on the MCP server protocol that connects AI agents to Notion, Jira, ClickUp, and Confluence — enabling cross-system agentic orchestration with governed data access and full audit logging.",
-      technologies: [
-        "MCP Protocol",
-        "TypeScript",
-        "Notion",
-        "Jira",
-        "ClickUp",
-        "Confluence",
-      ],
-      links: [],
-      image: "",
-      video: "",
-    },
-  ],
+  // Projects are now managed in Sanity (see sanity/schemas/project.ts and
+  // sanity/seed/projects.ndjson). The homepage grid and /projects pages fetch
+  // them at runtime via src/lib/sanity.ts.
   hackathons: [],
 } as const;

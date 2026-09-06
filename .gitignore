@@ -28,9 +28,14 @@ pnpm-debug.log*
 .env.production
 .env.local
 .env.*.local
+.dev.vars
+.dev.vars.*
 
 # macOS-specific files
 .DS_Store
 
 # jetbrains setting folder
 .idea/
+
+# Non-standard env dump (use .env / .dev.vars instead)
+env.local

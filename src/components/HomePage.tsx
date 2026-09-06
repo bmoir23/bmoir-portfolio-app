@@ -5,16 +5,25 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DATA } from "@/data/resume";
 import Markdown from "react-markdown";
 import ContactSection from "@/components/section/contact-section";
+import GithubActivitySection from "@/components/section/github-activity-section";
 import HackathonsSection from "@/components/section/hackathons-section";
 import PhotosSection from "@/components/section/photos-section";
 import ProjectsSection from "@/components/section/projects-section";
 import WorkSection from "@/components/section/work-section";
+import BlogSection from "@/components/section/blog-section";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { ArrowUpRight } from "lucide-react";
 
 const BLUR_FADE_DELAY = 0.04;
 
 const sectionComponents: Record<string, React.ReactNode> = {
+  githubActivity: (
+    <section id="github-activity">
+      <BlurFade delay={BLUR_FADE_DELAY * 2.5}>
+        <GithubActivitySection />
+      </BlurFade>
+    </section>
+  ),
   about: (
     <section id="about">
       <div className="flex min-h-0 flex-col gap-y-4">
@@ -112,6 +121,13 @@ const sectionComponents: Record<string, React.ReactNode> = {
       </BlurFade>
     </section>
   ),
+  blog: (
+    <section id="blog">
+      <BlurFade delay={BLUR_FADE_DELAY * 14}>
+        <BlogSection />
+      </BlurFade>
+    </section>
+  ),
   hackathons: (
     <section id="hackathons">
       <BlurFade delay={BLUR_FADE_DELAY * 13}>
@@ -139,7 +155,7 @@ export default function HomePage() {
     <main className="min-h-dvh flex flex-col gap-14 relative">
       <section id="hero">
         <div className="mx-auto w-full max-w-2xl space-y-8">
-          <div className="gap-2 gap-y-6 flex flex-col md:flex-row justify-between">
+          <div className="gap-2 gap-y-6 flex flex-col md:flex-row justify-between rounded-2xl border border-border bg-card p-6 sm:p-8">
             <div className="gap-2 flex flex-col order-2 md:order-1">
               <BlurFadeText
                 delay={BLUR_FADE_DELAY}
@@ -159,6 +175,12 @@ export default function HomePage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Download My Resume / CV"
+                    onClick={() => {
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      (window as any).posthog?.capture("resume downloaded", {
+                        resume_url: DATA.resumeUrl,
+                      });
+                    }}
                   >
                     Download My Resume / CV
                   </a>

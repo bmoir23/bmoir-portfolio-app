@@ -34,6 +34,16 @@ export const CONFIG = {
   },
 
   // ---------------------------------------------------------------------------
+  // Contact Settings
+  // ---------------------------------------------------------------------------
+  contact: {
+    // Your Cal.com booking link, i.e. the "username/event" part of
+    // https://cal.com/<calLink>. Leave empty to hide the scheduling widget.
+    calLink: "bmoir/30min",
+    calLayout: "month_view" as const,
+  },
+
+  // ---------------------------------------------------------------------------
   // Font Settings
   // See https://fontsource.org/?variable=true for fonts that can be installed via package registry
   // To change fonts:

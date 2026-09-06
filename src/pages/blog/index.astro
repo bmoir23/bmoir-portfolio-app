@@ -1,0 +1,75 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getPosts, isSanityConfigured } from "@/lib/sanity";
+import { BlogCard, type BlogCardPost } from "@/components/blog-card";
+import { DATA } from "@/data/resume";
+import BackButton from "@/components/ui/back-button.astro";
+
+export const prerender = false;
+
+const configured = isSanityConfigured(Astro.locals);
+let posts: BlogCardPost[] = [];
+let fetchError: string | null = null;
+
+if (configured) {
+  try {
+    posts = await getPosts(Astro.locals, 50);
+  } catch (e) {
+    fetchError = e instanceof Error ? e.message : "Failed to fetch posts";
+  }
+}
+---
+
+<Layout title="Blog">
+  <main class="min-h-dvh flex flex-col gap-10">
+    <div class="pt-2">
+      <BackButton href="/" label="Back" />
+    </div>
+
+    <section class="flex flex-col gap-y-3 items-center justify-center pt-4">
+      <div class="flex items-center w-full">
+        <div class="flex-1 h-px bg-linear-to-r from-transparent from-5% via-border via-95% to-transparent"></div>
+        <div class="border bg-primary z-10 rounded-xl px-4 py-1">
+          <span class="text-background text-sm font-medium">{DATA.sections.blog.label}</span>
+        </div>
+        <div class="flex-1 h-px bg-linear-to-l from-transparent from-5% via-border via-95% to-transparent"></div>
+      </div>
+      <h1 class="text-3xl font-bold tracking-tighter sm:text-4xl">Blog</h1>
+      <p class="text-muted-foreground md:text-lg/relaxed lg:text-base/relaxed text-balance text-center max-w-xl">
+        {DATA.sections.blog.text}
+      </p>
+    </section>
+
+    {!configured && (
+      <section class="rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center">
+        <p class="text-sm text-muted-foreground max-w-md mx-auto">
+          Sanity isn't configured yet. Add <code class="text-foreground">SANITY_PROJECT_ID</code> and
+          <code class="text-foreground">SANITY_DATASET</code> to your environment (see
+          <code class="text-foreground">.env.example</code> / <code class="text-foreground">BLOG.md</code>) to start publishing.
+        </p>
+      </section>
+    )}
+
+    {configured && fetchError && (
+      <section class="rounded-xl border border-destructive/30 bg-destructive/10 p-6 text-center">
+        <p class="text-sm text-destructive">Couldn't load posts: {fetchError}</p>
+      </section>
+    )}
+
+    {configured && !fetchError && posts.length === 0 && (
+      <section class="rounded-xl border border-dashed border-border bg-muted/40 p-8 text-center">
+        <p class="text-sm text-muted-foreground max-w-md mx-auto">
+          No posts yet. Check back soon — I'll be publishing notes on AI architecture, agentic systems, and developer infrastructure here.
+        </p>
+      </section>
+    )}
+
+    {configured && !fetchError && posts.length > 0 && (
+      <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+        {posts.map((post) => (
+          <BlogCard post={post} href={`/blog/${post.slug}`} />
+        ))}
+      </section>
+    )}
+  </main>
+</Layout>

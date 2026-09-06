@@ -1,0 +1,186 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getProjectBySlug, isSanityConfigured } from "@/lib/sanity";
+import { ArrowLeft, ArrowUpRight, Globe } from "lucide-react";
+import { Icons } from "@/components/icons";
+import { DATA } from "@/data/resume";
+import BlogPostBody from "@/components/blog-post-body";
+import { createPosthogClient } from "@/lib/posthog";
+import BackButton from "@/components/ui/back-button.astro";
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect("/projects");
+}
+
+const configured = isSanityConfigured(Astro.locals);
+
+if (!configured) {
+  return Astro.redirect("/projects");
+}
+
+const project = await getProjectBySlug(Astro.locals, slug);
+
+if (!project) {
+  return Astro.redirect("/projects");
+}
+
+const posthog = createPosthogClient(Astro.locals);
+const viewerIp =
+  Astro.request.headers.get("cf-connecting-ip") ?? Astro.clientAddress ?? "anonymous";
+try {
+  await posthog.captureImmediate({
+    distinctId: viewerIp,
+    event: "project viewed",
+    properties: {
+      project_slug: slug,
+      project_title: project.title,
+      technologies: project.technologies ?? [],
+      $current_url: Astro.request.url,
+    },
+  });
+} catch {
+  // Non-fatal — don't block page render if analytics fails
+} finally {
+  await posthog.shutdown();
+}
+
+const cardClass = "rounded-2xl border border-border bg-card p-6 sm:p-8";
+---
+
+<Layout title={project.title} description={project.excerpt} image={project.coverImageUrl}>
+  <main class="min-h-dvh flex flex-col gap-8">
+    <section class="flex items-center justify-between pt-2">
+      <BackButton href="/projects" label="Back" class="text-muted-foreground hover:text-foreground" />
+      <a
+        href="/"
+        class="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+      >
+        Home
+        <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
+      </a>
+    </section>
+
+    <article class="flex flex-col gap-6">
+      <header class={`${cardClass} flex flex-col gap-4`}>
+        <h1 class="text-3xl font-bold tracking-tighter sm:text-4xl lg:text-5xl">
+          {project.title}
+        </h1>
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+          {project.dates && <time>{project.dates}</time>}
+          {project.active && (
+            <>
+              <span aria-hidden>·</span>
+              <span class="inline-flex items-center gap-1.5">
+                <span class="size-2 rounded-full bg-emerald-500"></span>
+                Active
+              </span>
+            </>
+          )}
+        </div>
+        {project.excerpt && (
+          <p class="text-muted-foreground md:text-lg/relaxed text-balance">
+            {project.excerpt}
+          </p>
+        )}
+        {(project.githubUrl || project.websiteUrl) && (
+          <div class="flex flex-wrap gap-3 pt-1">
+            {project.githubUrl && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
+                <Icons.github className="size-4" />
+                View on GitHub
+              </a>
+            )}
+            {project.websiteUrl && (
+              <a
+                href={project.websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
+                <Globe className="size-4" />
+                Visit Website
+              </a>
+            )}
+          </div>
+        )}
+      </header>
+
+      {project.coverImageUrl && (
+        <div class="rounded-xl overflow-hidden border border-border">
+          <img
+            src={project.coverImageUrl}
+            alt={project.title}
+            class="w-full max-h-[420px] object-cover"
+            loading="eager"
+          />
+        </div>
+      )}
+
+      {project.overview && (
+        <section class={`${cardClass} flex flex-col gap-4`}>
+          <h2 class="text-xl font-bold">Overview</h2>
+          <div class="prose prose-lg max-w-none text-pretty font-sans leading-relaxed text-foreground dark:prose-invert">
+            <BlogPostBody body={project.overview} />
+          </div>
+        </section>
+      )}
+
+      {project.technologies && project.technologies.length > 0 && (
+        <section class={`${cardClass} flex flex-col gap-4`}>
+          <h2 class="text-xl font-bold">Tech Stack</h2>
+          <div class="flex flex-wrap gap-1.5">
+            {project.technologies.map((tech) => (
+              <span class="text-[11px] font-medium border border-border h-6 w-fit px-2 inline-flex items-center rounded-md">
+                {tech}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {project.skills && project.skills.length > 0 && (
+        <section class={`${cardClass} flex flex-col gap-4`}>
+          <h2 class="text-xl font-bold">Skills Used</h2>
+          <div class="flex flex-wrap gap-1.5">
+            {project.skills.map((skill) => (
+              <span class="text-[11px] font-medium border border-border h-6 w-fit px-2 inline-flex items-center rounded-md">
+                {skill}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {project.architectureMarkdown && (
+        <section class={`${cardClass} flex flex-col gap-4`}>
+          <h2 class="text-xl font-bold">Architecture & Design Decisions</h2>
+          <div class="prose prose-lg max-w-none text-pretty font-sans leading-relaxed text-foreground dark:prose-invert">
+            <BlogPostBody body={project.architectureMarkdown} />
+          </div>
+        </section>
+      )}
+    </article>
+
+    <footer class="border-t border-border pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="text-sm text-muted-foreground">
+        Built by <span class="text-foreground font-medium">{DATA.name}</span>
+      </div>
+      <a
+        href="/projects"
+        class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline underline-offset-4"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+        More projects
+      </a>
+    </footer>
+  </main>
+</Layout>
