@@ -44,3 +44,9 @@ setTimeout(() => session.post('Debugger.pause', () => {}), 15000);
 await import('astro/config');
 console.log('import ok, no hang'); process.exit(0);
 " 2>&1 | tail -30; echo "exit: $?"", "timestamp": "2026-08-30T22:27:44-04:00"}
+{"event": "before_shell", "command": "pnpm astro check 2>&1 | tail -30", "timestamp": "2026-09-06T18:38:09-04:00"}
+{"event": "before_shell", "command": "./node_modules/.bin/astro check 2>&1 | tail -25", "timestamp": "2026-09-06T18:38:39-04:00"}
+{"event": "before_shell", "command": "pnpm install 2>&1 | tail -5 && ./node_modules/.bin/astro check 2>&1 | tail -25", "timestamp": "2026-09-06T18:38:45-04:00"}
+{"event": "before_shell", "command": "./node_modules/.bin/astro check 2>&1 | grep -E "glowing-shadow|project-card|blog-card" ; echo "---exit:$?---"; ./node_modules/.bin/astro check 2>&1 | grep -oE "src/[a-zA-Z0-9/_.-]+\.(tsx|ts|astro)" | sort | uniq -c", "timestamp": "2026-09-06T18:39:39-04:00"}
+{"event": "before_shell", "command": "pnpm build 2>&1 | tail -15", "timestamp": "2026-09-06T18:39:59-04:00"}
+{"event": "before_shell", "command": "pnpm dev", "timestamp": "2026-09-06T18:40:42-04:00"}

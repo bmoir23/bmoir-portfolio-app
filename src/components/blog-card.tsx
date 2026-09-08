@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { GlowingShadow } from "@/components/ui/glowing-shadow";
 import { ArrowUpRight } from "lucide-react";
 import { useMemo } from "react";
 
@@ -63,14 +63,12 @@ export function BlogCard({ post, href, className }: BlogCardProps) {
   const readingTime = post.readingTime ?? estimateReadingTime(post.bodyMarkdown);
 
   return (
-    <a
-      href={href}
-      className={cn(
-        "group flex flex-col h-full border border-border rounded-xl overflow-hidden hover:ring-2 hover:ring-muted transition-all duration-200 cursor-pointer",
-        className,
-      )}
-    >
-      <div className="relative shrink-0 h-44 overflow-hidden">
+    <GlowingShadow className={className}>
+      <a
+        href={href}
+        className="group flex flex-col h-full cursor-pointer"
+      >
+        <div className="relative shrink-0 h-44 overflow-hidden">
         {post.coverImageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -80,7 +78,7 @@ export function BlogCard({ post, href, className }: BlogCardProps) {
           />
         ) : (
           <div
-            className="relative w-full h-full"
+            className="relative w-full h-full transition-transform duration-300 group-hover:scale-[1.03]"
             style={{
               background: `linear-gradient(135deg, ${gradient.from} 0%, ${gradient.via} 50%, ${gradient.to} 100%)`,
             }}
@@ -143,7 +141,8 @@ export function BlogCard({ post, href, className }: BlogCardProps) {
             ))}
           </div>
         )}
-      </div>
-    </a>
+        </div>
+      </a>
+    </GlowingShadow>
   );
 }
