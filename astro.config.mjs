@@ -40,6 +40,18 @@ export default defineConfig({
     resolve: {
       dedupe: ['react', 'react-dom'],
     },
+    // Pre-bundle React into a single optimized instance so the dev module runner
+    // doesn't occasionally instantiate a second copy (which nulls the SSR
+    // dispatcher). Production builds already ship a single React instance.
+    optimizeDeps: {
+      include: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react-dom/server.edge',
+      ],
+    },
   },
 
   integrations: [
