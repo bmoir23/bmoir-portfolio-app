@@ -24,7 +24,12 @@ export default defineConfig({
   site: CONFIG.site.url,
   output: 'server',
 
-  adapter: cloudflare(),
+  adapter: cloudflare({
+    // Use local binding mocks (Miniflare) for `astro dev`/`preview` instead of
+    // opening a remote proxy session, which requires a CLOUDFLARE_API_TOKEN.
+    // Production deploys use the real bindings from wrangler.jsonc regardless.
+    remoteBindings: false,
+  }),
 
   vite: {
     plugins: [tailwindcss()],
