@@ -116,11 +116,16 @@
   transition: --bg-size var(--interaction-speed) ease;
 }
 
-/* Content sits on top, inset by the border width so only the gradient ring shows */
+/* Content sits on top, inset by the border width so only the gradient ring
+   shows. It stays in flow (relative, not absolute) so the card establishes the
+   height of .glow-container — otherwise the container collapses to 0 height in
+   an `auto-rows-fr` grid and the cards render invisibly. */
 .glow-content {
-  position: absolute;
-  inset: var(--border-width);
+  position: relative;
   z-index: 1;
+  flex: 1;
+  align-self: stretch;
+  margin: var(--border-width);
   background: var(--card);
   border-radius: calc(var(--card-radius) - var(--border-width));
   overflow: hidden;
