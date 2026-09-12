@@ -33,6 +33,13 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    // Ensure a single React instance in the workerd SSR bundle. Without this the
+    // Cloudflare adapter's SSR environment can load two copies of React, so the
+    // dispatcher set by react-dom/server is invisible to island components and
+    // hooks throw "Cannot read properties of null (reading 'useState')".
+    resolve: {
+      dedupe: ['react', 'react-dom'],
+    },
   },
 
   integrations: [
