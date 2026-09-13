@@ -1,6 +1,8 @@
 {
 	"compatibility_date": "2026-04-30",
-	"compatibility_flags": ["global_fetch_strictly_public"],
+	// nodejs_compat is required because react-markdown (SSR'd in project cards /
+	// blog + project detail pages) imports Node built-ins like "util" and "tty".
+	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
 	"name": "bmoirdevportfolio",
 	"main": "@astrojs/cloudflare/entrypoints/server",
 	"assets": {
