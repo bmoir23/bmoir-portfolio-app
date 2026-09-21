@@ -1,19 +1,22 @@
 ---
-// Client-side PostHog. Prefer Vite-baked PUBLIC_* vars; fall back to Cloudflare
-// runtime vars from wrangler.jsonc so analytics still loads in Workers SSR.
+// Client-side PostHog. Prefer the Vite-baked PUBLIC_* key; fall back to the
+// Cloudflare runtime var from wrangler.jsonc so analytics still loads in
+// Workers SSR.
 import { getEnv } from "@/lib/runtime-env";
 
 const apiKey =
   (import.meta.env.PUBLIC_POSTHOG_API_KEY as string | undefined) ||
   getEnv(Astro.locals, "PUBLIC_POSTHOG_API_KEY") ||
   "";
-// Capture goes through the site's own first-party `/ingest` reverse proxy
-// (src/pages/ingest/[...path].ts) so tracker blockers can't drop browser
-// events by blocking the third-party posthog.com host.
-const apiHost =
-  (import.meta.env.PUBLIC_POSTHOG_HOST as string | undefined) ||
-  getEnv(Astro.locals, "PUBLIC_POSTHOG_HOST") ||
-  "/ingest";
+// Browser capture always goes through the site's own first-party `/ingest`
+// reverse proxy (src/pages/ingest/[...path].ts) so tracker blockers can't drop
+// events by blocking the third-party posthog.com host. This is a relative,
+// same-origin path on purpose: it is correct on localhost, preview deploys and
+// production with no build-time config. It is intentionally NOT read from
+// `PUBLIC_POSTHOG_HOST`: this page is prerendered, so that var is baked at build
+// time, and a stale build value (a bare cloud host) silently sent browser
+// capture third-party.
+const apiHost = "/ingest";
 ---
 
 {

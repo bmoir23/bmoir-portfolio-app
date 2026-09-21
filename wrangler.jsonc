@@ -26,12 +26,13 @@
 		// Workers Builds environment variables so Vite can bake PUBLIC_* into
 		// the client bundle at build time.
 		"PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAADvDvwh3dn8mKvhK",
-		"PUBLIC_POSTHOG_API_KEY": "phc_rbfxvmPhmR4yZyEhWD9dVj76eqe3hTttT74a5jEU6ZWG",
-		// Browser capture goes through the site's own first-party reverse proxy
-		// (src/pages/ingest/[...path].ts) so tracker blockers can't drop events
-		// by blocking the third-party posthog.com host. Server-side ingest
-		// (POSTHOG_HOST above) still talks to us.i.posthog.com directly.
-		"PUBLIC_POSTHOG_HOST": "https://portfolio.brianmoir.dev/ingest"
+		// Browser capture goes through the site's own first-party `/ingest`
+		// reverse proxy (src/pages/ingest/[...path].ts) so tracker blockers can't
+		// drop events by blocking the third-party posthog.com host. The proxy path
+		// is hardcoded in src/components/posthog.astro, so no PUBLIC_POSTHOG_HOST is
+		// needed. Server-side ingest (POSTHOG_HOST above) talks to us.i.posthog.com
+		// directly.
+		"PUBLIC_POSTHOG_API_KEY": "phc_rbfxvmPhmR4yZyEhWD9dVj76eqe3hTttT74a5jEU6ZWG"
 	},
 	"ai": {
 		  "binding": "AI"

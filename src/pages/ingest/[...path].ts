@@ -4,11 +4,12 @@ export const prerender = false;
 
 // First-party reverse proxy for PostHog ingestion.
 //
-// Browser analytics is initialized against `https://<site>/ingest` (see
-// `PUBLIC_POSTHOG_HOST`), so every capture/decide/asset request goes to the
-// site's own origin instead of `*.i.posthog.com`. Serving capture first-party
-// stops ad/tracker blockers — which block the third-party PostHog domains by
-// hostname — from silently dropping `$pageview` and other browser events.
+// Browser analytics is initialized against the site's own `/ingest` path (see
+// src/components/posthog.astro), so every capture/decide/asset request goes to
+// the site's own origin instead of `*.i.posthog.com`. Serving capture
+// first-party stops ad/tracker blockers — which block the third-party PostHog
+// domains by hostname — from silently dropping `$pageview` and other browser
+// events.
 //
 // This runs on the same Cloudflare Worker that serves the site. Requests to
 // `/ingest/static/*` are forwarded to the assets host (array.js, recorder,
@@ -24,11 +25,23 @@ export const ALL: APIRoute = async ({ request }) => {
   const upstreamHost = path.startsWith("/static/") ? ASSET_HOST : API_HOST;
   const upstreamUrl = `https://${upstreamHost}${path}${url.search}`;
 
-  // Reuse the incoming method/body/headers, but let `fetch` set the upstream
-  // Host from the URL and never forward this site's cookies to PostHog.
-  const proxied = new Request(upstreamUrl, request);
-  proxied.headers.delete("cookie");
-  proxied.headers.delete("host");
+  // Build a fresh upstream request rather than reusing the incoming edge
+  // request. Reusing it carried this site's cookies and Cloudflare-internal
+  // request metadata to PostHog; under the Worker's `global_fetch_strictly_public`
+  // flag that subrequest fails and the route returns a 500. Copying into a plain
+  // Headers also drops the site Host so `fetch` derives the upstream Host from
+  // `upstreamUrl`.
+  const headers = new Headers(request.headers);
+  headers.delete("cookie");
+  headers.delete("host");
 
-  return fetch(proxied);
+  const hasBody = request.method !== "GET" && request.method !== "HEAD";
+  const init: RequestInit & { duplex?: "half" } = { method: request.method, headers };
+  if (hasBody) {
+    // `duplex` is required to stream a request body with `fetch`.
+    init.body = request.body;
+    init.duplex = "half";
+  }
+
+  return fetch(upstreamUrl, init);
 };
