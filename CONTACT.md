@@ -113,7 +113,7 @@ Configured in `src/data/config.ts`:
 
 ```ts
 contact: {
-  calLink: "brianmoir/30min", // the "username/event" from cal.com/<calLink>
+  calLink: "bmoir/quick-meet", // the "username/event" from cal.com/<calLink>
   calLayout: "month_view",
 }
 ```

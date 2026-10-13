@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { Badge } from "@/components/ui/badge";
-import { GlowingShadow } from "@/components/ui/glowing-shadow";
 import { Icons } from "@/components/icons";
+import { cn } from "@/lib/utils";
 import { ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 import Markdown from "react-markdown";
@@ -139,8 +139,13 @@ export function ProjectCard({
   }
 
   return (
-    <GlowingShadow className={className}>
-      <div className="group flex flex-col h-full cursor-pointer">
+    <div
+      className={cn(
+        "group flex flex-col h-full border border-border rounded-xl overflow-hidden bg-card hover:ring-2 cursor-pointer hover:ring-muted transition-all duration-200",
+        className,
+      )}
+    >
+      <div className="flex flex-col h-full">
         <div className="relative shrink-0 overflow-hidden">
           <a
             href={detailHref}
@@ -222,6 +227,6 @@ export function ProjectCard({
           )}
         </div>
       </div>
-    </GlowingShadow>
+    </div>
   );
 }
