@@ -3852,8 +3852,8 @@ packages:
     resolution: {integrity: sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA==}
     engines: {node: '>=6'}
 
-  markdown-it@14.2.0:
-    resolution: {integrity: sha512-1TGiQiJVRQ3NPmZH6sx5Cfnmg6GQm9jvC1ch4TK511NjSJvjzKLzn5pPfZRNZkRPZP0HqCioSndqH8v2nRaWVQ==}
+  markdown-it@14.3.2:
+    resolution: {integrity: sha512-sHHjZ5fJKlgrG4qns2YwVcdNep35h5fERrfkD2YNsb9UFk0UIHarbiTaHKVMlPuWAoiilyK8Fv/jAm11slsY7Q==}
     hasBin: true
 
   math-intrinsics@1.1.0:
@@ -6634,11 +6634,11 @@ snapshots:
 
   '@marijn/find-cluster-break@1.0.3': {}
 
-  '@mdit/plugin-alert@0.23.2(markdown-it@14.2.0)':
+  '@mdit/plugin-alert@0.23.2(markdown-it@14.3.2)':
     dependencies:
       '@types/markdown-it': 14.1.2
     optionalDependencies:
-      markdown-it: 14.2.0
+      markdown-it: 14.3.2
 
   '@module-federation/dts-plugin@2.6.0(typescript@5.9.3)':
     dependencies:
@@ -6887,10 +6887,10 @@ snapshots:
 
   '@portabletext/markdown@1.4.2':
     dependencies:
-      '@mdit/plugin-alert': 0.23.2(markdown-it@14.2.0)
+      '@mdit/plugin-alert': 0.23.2(markdown-it@14.3.2)
       '@portabletext/schema': 2.2.2
       '@portabletext/toolkit': 5.0.2
-      markdown-it: 14.2.0
+      markdown-it: 14.3.2
 
   '@portabletext/patches@2.0.5':
     dependencies:
@@ -9675,7 +9675,7 @@ snapshots:
       pify: 4.0.1
       semver: 5.7.2
 
-  markdown-it@14.2.0:
+  markdown-it@14.3.2:
     dependencies:
       argparse: 2.0.1
       entities: 4.5.0
