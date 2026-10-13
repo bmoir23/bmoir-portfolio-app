@@ -39,7 +39,7 @@ export const CONFIG = {
   contact: {
     // Your Cal.com booking link, i.e. the "username/event" part of
     // https://cal.com/<calLink>. Leave empty to hide the scheduling widget.
-    calLink: "bmoir/30min",
+    calLink: "bmoir/quick-meet",
     calLayout: "month_view" as const,
   },
 
