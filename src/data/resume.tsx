@@ -39,7 +39,7 @@ export const DATA = {
     order: 5, enabled: true,
       label: "Coding Activity",
       heading: "GitHub Activity Graph",
-      text: "My contribution graph over the last year. Flip on Game Mode to blast through it retro-space-shooter style.",
+      text: "Recent GitHub contributions, drawn as a skyline. Switch between the 3D city and a 2D heatmap.",
     },
     about: { order: 2, enabled: true, heading: "About" },
     work: { order: 3, enabled: true, heading: "Work Experience", presentLabel: "Present" },
@@ -163,7 +163,7 @@ export const DATA = {
       location: "Knoxville, TN (Remote)",
       title: "CTO & Principal AI Architect",
       logoUrl: "https://www.google.com/s2/favicons?domain=liinkd.xyz&sz=128",
-      start: "January 2025",
+      start: "January 2023",
       end: undefined,
       description:
         "Lead all technical strategy, AI architecture, and platform engineering for a creator-infrastructure startup building agentic AI tooling. Architected the Syncc Executive Agent OS — a production multi-agent AI platform integrating LangChain orchestration, MCP servers, n8n automation, and vector retrieval with configurable human-in-the-loop oversight and behavioral governance. Designed RAG document Q&A pipelines with DeepEval-based evaluation, a Terraform/AWS Lambda structured data-extraction pipeline, and advanced prompt-engineering frameworks across GPT-4, Claude, and open-source models. Established MLOps standards with AI Gateway routing for cost governance, observability, and latency optimization across cloud providers.",
