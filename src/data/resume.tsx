@@ -39,7 +39,7 @@ export const DATA = {
     order: 5, enabled: true,
       label: "Coding Activity",
       heading: "GitHub Activity Graph",
-      text: "Recent GitHub contributions, drawn as a skyline. Switch between the 3D city and a 2D heatmap.",
+      text: "A year of contributions on a squircle heatmap, with the busiest repositories stacked in a drawer over the grid.",
     },
     about: { order: 2, enabled: true, heading: "About" },
     work: { order: 3, enabled: true, heading: "Work Experience", presentLabel: "Present" },
