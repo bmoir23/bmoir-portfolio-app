@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@animateicons/react':
+        specifier: ^0.13.0
+        version: 0.13.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@astrojs/cloudflare':
         specifier: ^14.3.1
         version: 14.3.1(@types/node@24.12.2)(astro@7.3.2(@astrojs/markdown-remark@7.3.1)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.12.2)(jiti@2.6.1)(yaml@2.8.3))(esbuild@0.28.2)(jiti@2.6.1)(wrangler@4.131.1(@types/node@24.12.2))(yaml@2.8.3)
@@ -140,6 +143,13 @@ importers:
         version: 6.0.3
 
 packages:
+
+  '@animateicons/react@0.13.0':
+    resolution: {integrity: sha512-xbSymVZQJqUR1tcRVW4vyEy+USAFMDp0l3uM4nlmEyQazPib7Ay+PFKdBNLeXHXaSUGhKUYJXSvxHYkFki6P2w==}
+    engines: {node: '>=18.17.0'}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
 
   '@astrojs/check@0.9.9':
     resolution: {integrity: sha512-A5UW8uIuErLWEoRQvzgXpO1gTjUFtK8r7nU2Z7GewAMxUb7bPvpk11qaKKgxqXlHJWlAvaaxy+Xg28A6bmQ1Tg==}
@@ -3516,6 +3526,11 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
 snapshots:
+
+  '@animateicons/react@0.13.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
+    dependencies:
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
 
   '@astrojs/check@0.9.9(prettier@3.8.3)(typescript@6.0.3)':
     dependencies:

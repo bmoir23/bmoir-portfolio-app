@@ -1,24 +1,27 @@
 "use client";
 
 import {
-  Notification03Icon,
   Search01Icon,
-  Sun03Icon,
-  Moon02Icon,
-  ComputerIcon,
-  UserEdit01Icon,
-  PlusSignIcon,
   Home01Icon,
   News01Icon,
   Folder01Icon,
   Mail01Icon,
-  GithubIcon,
-  Linkedin01Icon,
-  BubbleChatIcon,
   FilterHorizontalIcon,
   AutoConversationsIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  HouseIcon,
+  ShareIcon,
+  GithubIcon,
+  LinkedinIcon,
+  MailIcon,
+  MessageCircleIcon,
+  ContrastIcon,
+  SunIcon,
+  MoonIcon,
+  LaptopMinimalIcon,
+} from "@animateicons/react/lucide";
 import { useMemo, useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import useMeasure from "react-use-measure";
@@ -26,20 +29,40 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { DATA } from "@/data/resume";
 
-type MenuView =
-  | "default"
-  | "home"
-  | "search"
-  | "notifications"
-  | "profile"
-  | "theme";
+type MenuView = "default" | "home" | "search" | "notifications" | "theme";
 
-const MAIN_NAV = [
-  { icon: PlusSignIcon, name: "home" as const, label: "Home" },
-  { icon: Search01Icon, name: "search" as const, label: "Search" },
-  { icon: Notification03Icon, name: "notifications" as const, label: "Social" },
-  { icon: UserEdit01Icon, name: "profile" as const, label: "Profile" },
-  { icon: Sun03Icon, name: "theme" as const, label: "Theme" },
+type AnimateIconComponent =
+  | typeof HouseIcon
+  | typeof ShareIcon
+  | typeof GithubIcon
+  | typeof LinkedinIcon
+  | typeof MailIcon
+  | typeof MessageCircleIcon
+  | typeof ContrastIcon
+  | typeof SunIcon
+  | typeof MoonIcon
+  | typeof LaptopMinimalIcon;
+
+type NavItem =
+  | {
+      name: "home" | "search" | "notifications" | "theme";
+      label: string;
+      kind: "menu";
+      Icon: AnimateIconComponent | "search";
+    }
+  | {
+      name: "chat";
+      label: string;
+      kind: "action";
+      Icon: AnimateIconComponent;
+    };
+
+const MAIN_NAV: NavItem[] = [
+  { Icon: HouseIcon, name: "home", label: "Home", kind: "menu" },
+  { Icon: "search", name: "search", label: "Search", kind: "menu" },
+  { Icon: ShareIcon, name: "notifications", label: "Social", kind: "menu" },
+  { Icon: MessageCircleIcon, name: "chat", label: "AI Assistant", kind: "action" },
+  { Icon: ContrastIcon, name: "theme", label: "Theme", kind: "menu" },
 ];
 
 const HOME_ITEMS = [
@@ -54,19 +77,16 @@ const SEARCH_OPTIONS = [
   { icon: AutoConversationsIcon, text: "Projects", href: "/projects" },
 ];
 
-/** Fallback when a social key has no mapped Hugeicon. */
-const LinkFallbackIcon = AutoConversationsIcon;
-
-const SOCIAL_ICON_MAP = {
+const SOCIAL_ICON_MAP: Record<string, AnimateIconComponent> = {
   GitHub: GithubIcon,
-  LinkedIn: Linkedin01Icon,
-  email: Mail01Icon,
-} as const;
+  LinkedIn: LinkedinIcon,
+  email: MailIcon,
+};
 
 const THEME_OPTIONS = [
-  { key: "light" as const, icon: Sun03Icon, text: "Light" },
-  { key: "dark" as const, icon: Moon02Icon, text: "Dark" },
-  { key: "system" as const, icon: ComputerIcon, text: "System" },
+  { key: "light" as const, Icon: SunIcon, text: "Light" },
+  { key: "dark" as const, Icon: MoonIcon, text: "Dark" },
+  { key: "system" as const, Icon: LaptopMinimalIcon, text: "System" },
 ];
 
 export type BottomMenuProps = {
@@ -80,12 +100,7 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
   const [hiddenRef, hiddenBounds] = useMeasure();
   const [view, setView] = useState<MenuView>("default");
   const [searchQuery, setSearchQuery] = useState("");
-  const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -104,10 +119,6 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
   }, []);
 
   const activeTheme = (theme ?? "light") as "light" | "dark" | "system";
-  const themeNavIcon =
-    mounted && (activeTheme === "dark" || resolvedTheme === "dark")
-      ? Moon02Icon
-      : Sun03Icon;
 
   const socialLinks = useMemo(
     () =>
@@ -117,8 +128,7 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
           key,
           name: social.name,
           url: social.url,
-          icon:
-            SOCIAL_ICON_MAP[key as keyof typeof SOCIAL_ICON_MAP] ?? LinkFallbackIcon,
+          Icon: SOCIAL_ICON_MAP[key] ?? MailIcon,
         })),
     [],
   );
@@ -202,7 +212,7 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
       case "notifications":
         return (
           <div className="space-y-0.5 min-w-[210px] p-[6px] py-0.5">
-            {socialLinks.map(({ key, name, url, icon: Icon }) => {
+            {socialLinks.map(({ key, name, url, Icon }) => {
               const isExternal = url.startsWith("http");
               return (
                 <a
@@ -213,8 +223,7 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
                   className={`${sharedHover} flex items-center gap-3`}
                   onClick={() => setView("default")}
                 >
-                  <HugeiconsIcon
-                    icon={Icon}
+                  <Icon
                     size={20}
                     className="text-muted-foreground group-hover:text-foreground transition-all duration-75"
                   />
@@ -225,56 +234,10 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
           </div>
         );
 
-      case "profile":
-        return (
-          <div className="space-y-0.5 min-w-[230px] p-[6px] py-0.5">
-            <a
-              href="/contact"
-              className={`${sharedHover} flex items-center gap-3`}
-              onClick={() => setView("default")}
-            >
-              <HugeiconsIcon
-                icon={Mail01Icon}
-                size={20}
-                className="text-muted-foreground group-hover:text-foreground transition-all duration-75"
-              />
-              <span className="transition-all duration-75">Contact</span>
-            </a>
-            <a
-              href="mailto:bmoirdev@gmail.com"
-              className={`${sharedHover} flex items-center gap-3`}
-              onClick={() => setView("default")}
-            >
-              <HugeiconsIcon
-                icon={UserEdit01Icon}
-                size={20}
-                className="text-muted-foreground group-hover:text-foreground transition-all duration-75"
-              />
-              <span className="transition-all duration-75">Email Me</span>
-            </a>
-            <div className="border-t border-border my-[2px]" />
-            <button
-              type="button"
-              className={`${sharedHover} flex items-center gap-3`}
-              onClick={() => {
-                setView("default");
-                onOpenChat?.();
-              }}
-            >
-              <HugeiconsIcon
-                icon={BubbleChatIcon}
-                size={20}
-                className="text-muted-foreground group-hover:text-foreground transition-all duration-75"
-              />
-              <span className="transition-all duration-75">AI Assistant</span>
-            </button>
-          </div>
-        );
-
       case "theme":
         return (
           <div className="flex items-center justify-between gap-1.5 min-w-[270px] p-[6px] py-0.5">
-            {THEME_OPTIONS.map(({ key, icon: Icon, text }) => (
+            {THEME_OPTIONS.map(({ key, Icon, text }) => (
               <button
                 key={key}
                 type="button"
@@ -285,8 +248,7 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
                     : "text-muted-foreground hover:bg-muted"
                 }`}
               >
-                <HugeiconsIcon
-                  icon={Icon}
+                <Icon
                   size={18}
                   className={`transition-all duration-75 ${
                     activeTheme === key
@@ -305,7 +267,7 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
         return _exhaustive;
       }
     }
-  }, [view, activeTheme, searchQuery, socialLinks, onOpenChat, setTheme]);
+  }, [view, activeTheme, searchQuery, socialLinks, setTheme]);
 
   return (
     <div
@@ -401,31 +363,57 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
       </AnimatePresence>
 
       {/* Toolbar */}
-      <div className="flex items-center gap-1 bg-background/95 backdrop-blur-xl border border-border rounded-[18px] p-1 mt-3 z-10 shadow-[0_10px_40px_-18px_rgba(0,0,0,0.45)]">
-        {MAIN_NAV.map(({ icon: Icon, name, label }) => {
-          const displayIcon = name === "theme" ? themeNavIcon : Icon;
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        className="flex items-center gap-1 bg-background/95 backdrop-blur-xl border border-border rounded-[18px] p-1 mt-3 z-10 shadow-[0_10px_40px_-18px_rgba(0,0,0,0.45)]"
+      >
+        {MAIN_NAV.map((item) => {
+          const isMenu = item.kind === "menu";
+          const isActive = isMenu && view === item.name;
+
           return (
-            <button
-              key={name}
+            <motion.button
+              key={item.name}
               type="button"
-              aria-label={label}
-              aria-expanded={view === name}
-              className={`p-3 rounded-[16px] transition-all ${
-                view === name ? "bg-accent" : "hover:bg-muted"
+              aria-label={item.label}
+              aria-expanded={isMenu ? isActive : undefined}
+              whileHover={{ scale: 1.06 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 420, damping: 24 }}
+              className={`p-3 rounded-[16px] transition-colors ${
+                isActive ? "bg-accent" : "hover:bg-muted"
               }`}
-              onClick={() => setView(view === name ? "default" : name)}
+              onClick={() => {
+                if (item.kind === "action") {
+                  setView("default");
+                  onOpenChat?.();
+                  return;
+                }
+                setView(view === item.name ? "default" : item.name);
+              }}
             >
-              <HugeiconsIcon
-                icon={displayIcon}
-                size={22}
-                className={`transition-all ${
-                  view === name ? "text-foreground" : "text-muted-foreground"
-                }`}
-              />
-            </button>
+              {item.Icon === "search" ? (
+                <HugeiconsIcon
+                  icon={Search01Icon}
+                  size={22}
+                  className={`transition-colors ${
+                    isActive ? "text-foreground" : "text-muted-foreground"
+                  }`}
+                />
+              ) : (
+                <item.Icon
+                  size={22}
+                  className={`transition-colors ${
+                    isActive ? "text-foreground" : "text-muted-foreground"
+                  }`}
+                />
+              )}
+            </motion.button>
           );
         })}
-      </div>
+      </motion.div>
     </div>
   );
 };
