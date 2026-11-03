@@ -20,6 +20,7 @@
   },
   "registries": {
     "@svgl": "https://svgl.app/r/{name}.json",
-    "@magicui": "https://magicui.design/r/{name}"
+    "@magicui": "https://magicui.design/r/{name}",
+    "@animateicons": "https://animateicons.in/r/{name}.json"
   }
 }
