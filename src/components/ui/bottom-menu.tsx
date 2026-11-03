@@ -1,16 +1,6 @@
 "use client";
 
 import {
-  Search01Icon,
-  Home01Icon,
-  News01Icon,
-  Folder01Icon,
-  Mail01Icon,
-  FilterHorizontalIcon,
-  AutoConversationsIcon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
   HouseIcon,
   ShareIcon,
   GithubIcon,
@@ -21,8 +11,21 @@ import {
   SunIcon,
   MoonIcon,
   LaptopMinimalIcon,
+  SearchIcon,
+  BookOpenIcon,
+  FolderIcon,
+  FilterIcon,
+  TrendingUpIcon,
 } from "@animateicons/react/lucide";
-import { useMemo, useState, useRef, useEffect } from "react";
+import { useIconHover, type IconHandle } from "@animateicons/react";
+import {
+  useMemo,
+  useState,
+  useRef,
+  useEffect,
+  type ReactNode,
+  type Ref,
+} from "react";
 import { AnimatePresence, motion } from "motion/react";
 import useMeasure from "react-use-measure";
 import { useTheme } from "next-themes";
@@ -41,14 +44,19 @@ type AnimateIconComponent =
   | typeof ContrastIcon
   | typeof SunIcon
   | typeof MoonIcon
-  | typeof LaptopMinimalIcon;
+  | typeof LaptopMinimalIcon
+  | typeof SearchIcon
+  | typeof BookOpenIcon
+  | typeof FolderIcon
+  | typeof FilterIcon
+  | typeof TrendingUpIcon;
 
 type NavItem =
   | {
       name: "home" | "search" | "notifications" | "theme";
       label: string;
       kind: "menu";
-      Icon: AnimateIconComponent | "search";
+      Icon: AnimateIconComponent;
     }
   | {
       name: "chat";
@@ -59,22 +67,30 @@ type NavItem =
 
 const MAIN_NAV: NavItem[] = [
   { Icon: HouseIcon, name: "home", label: "Home", kind: "menu" },
-  { Icon: "search", name: "search", label: "Search", kind: "menu" },
+  { Icon: SearchIcon, name: "search", label: "Search", kind: "menu" },
   { Icon: ShareIcon, name: "notifications", label: "Social", kind: "menu" },
   { Icon: MessageCircleIcon, name: "chat", label: "AI Assistant", kind: "action" },
   { Icon: ContrastIcon, name: "theme", label: "Theme", kind: "menu" },
 ];
 
-const HOME_ITEMS = [
-  { icon: Home01Icon, text: "Home", href: "/" },
-  { icon: News01Icon, text: "Blog", href: "/blog" },
-  { icon: Folder01Icon, text: "Projects", href: "/projects" },
-  { icon: Mail01Icon, text: "Contact", href: "/contact" },
+const HOME_ITEMS: {
+  Icon: AnimateIconComponent;
+  text: string;
+  href: string;
+}[] = [
+  { Icon: HouseIcon, text: "Home", href: "/" },
+  { Icon: BookOpenIcon, text: "Blog", href: "/blog" },
+  { Icon: FolderIcon, text: "Projects", href: "/projects" },
+  { Icon: MailIcon, text: "Contact", href: "/contact" },
 ];
 
-const SEARCH_OPTIONS = [
-  { icon: FilterHorizontalIcon, text: "Blog", href: "/blog" },
-  { icon: AutoConversationsIcon, text: "Projects", href: "/projects" },
+const SEARCH_OPTIONS: {
+  Icon: AnimateIconComponent;
+  text: string;
+  href: string;
+}[] = [
+  { Icon: FilterIcon, text: "Blog", href: "/blog" },
+  { Icon: TrendingUpIcon, text: "Projects", href: "/projects" },
 ];
 
 const SOCIAL_ICON_MAP: Record<string, AnimateIconComponent> = {
@@ -89,18 +105,90 @@ const THEME_OPTIONS = [
   { key: "system" as const, Icon: LaptopMinimalIcon, text: "System" },
 ];
 
+const CLOSE_DELAY_MS = 180;
+
 export type BottomMenuProps = {
   onOpenChat?: () => void;
   className?: string;
 };
 
+type DockIconButtonProps = {
+  label: string;
+  active?: boolean;
+  expanded?: boolean;
+  onOpen?: () => void;
+  onClick: () => void;
+  children: (ref: Ref<IconHandle>) => ReactNode;
+};
+
+function DockIconButton({
+  label,
+  active = false,
+  expanded,
+  onOpen,
+  onClick,
+  children,
+}: DockIconButtonProps) {
+  const { ref, triggerProps } = useIconHover({ trigger: "hover" });
+
+  return (
+    <motion.button
+      type="button"
+      aria-label={label}
+      aria-expanded={expanded}
+      whileHover={{ scale: 1.06 }}
+      whileTap={{ scale: 0.96 }}
+      transition={{ type: "spring", stiffness: 420, damping: 24 }}
+      className={`p-3 rounded-[16px] transition-colors ${
+        active ? "bg-accent" : "hover:bg-muted"
+      }`}
+      onMouseEnter={(event) => {
+        triggerProps.onMouseEnter?.(event);
+        onOpen?.();
+      }}
+      onMouseLeave={(event) => {
+        triggerProps.onMouseLeave?.(event);
+      }}
+      onFocus={() => onOpen?.()}
+      onClick={onClick}
+    >
+      {children(ref)}
+    </motion.button>
+  );
+}
+
 const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [elementRef] = useMeasure();
   const [hiddenRef, hiddenBounds] = useMeasure();
   const [view, setView] = useState<MenuView>("default");
   const [searchQuery, setSearchQuery] = useState("");
   const { theme, setTheme } = useTheme();
+
+  const clearCloseTimer = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
+  const openView = (next: MenuView) => {
+    clearCloseTimer();
+    setView(next);
+  };
+
+  const scheduleClose = () => {
+    clearCloseTimer();
+    closeTimerRef.current = setTimeout(() => {
+      setView("default");
+      closeTimerRef.current = null;
+    }, CLOSE_DELAY_MS);
+  };
+
+  useEffect(() => {
+    return () => clearCloseTimer();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -144,15 +232,14 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
       case "home":
         return (
           <div className="space-y-0.5 min-w-[210px] p-[6px] py-0.5">
-            {HOME_ITEMS.map(({ icon: Icon, text, href }) => (
+            {HOME_ITEMS.map(({ Icon, text, href }) => (
               <a
                 key={text}
                 href={href}
                 className={`${sharedHover} flex items-center gap-3`}
                 onClick={() => setView("default")}
               >
-                <HugeiconsIcon
-                  icon={Icon}
+                <Icon
                   size={20}
                   className="text-muted-foreground group-hover:text-foreground transition-all duration-75"
                 />
@@ -175,10 +262,10 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
                   : "/blog";
               }}
             >
-              <HugeiconsIcon
-                icon={Search01Icon}
+              <SearchIcon
                 size={17}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                isAnimated={false}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
               />
               <input
                 type="text"
@@ -189,17 +276,15 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
               />
             </form>
             <div className="flex gap-1.5">
-              {SEARCH_OPTIONS.map(({ icon: Icon, text, href }) => (
+              {SEARCH_OPTIONS.map(({ Icon, text, href }) => (
                 <a
                   key={text}
                   href={href}
                   className={`${sharedHover} flex-1 flex items-center justify-center gap-1.5 bg-muted hover:bg-accent`}
                   onClick={() => setView("default")}
                 >
-                  <HugeiconsIcon
-                    icon={Icon}
+                  <Icon
                     size={14}
-                    strokeWidth={2}
                     className="text-muted-foreground group-hover:text-foreground transition-all duration-75"
                   />
                   <span className="transition-all duration-75">{text}</span>
@@ -273,6 +358,8 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
     <div
       ref={containerRef}
       className={cn("relative flex flex-col items-center", className)}
+      onMouseEnter={clearCloseTimer}
+      onMouseLeave={scheduleClose}
     >
       {/* Hidden for measurement */}
       <div
@@ -372,45 +459,38 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
         {MAIN_NAV.map((item) => {
           const isMenu = item.kind === "menu";
           const isActive = isMenu && view === item.name;
+          const Icon = item.Icon;
 
           return (
-            <motion.button
+            <DockIconButton
               key={item.name}
-              type="button"
-              aria-label={item.label}
-              aria-expanded={isMenu ? isActive : undefined}
-              whileHover={{ scale: 1.06 }}
-              whileTap={{ scale: 0.96 }}
-              transition={{ type: "spring", stiffness: 420, damping: 24 }}
-              className={`p-3 rounded-[16px] transition-colors ${
-                isActive ? "bg-accent" : "hover:bg-muted"
-              }`}
+              label={item.label}
+              active={isActive}
+              expanded={isMenu ? isActive : undefined}
+              onOpen={
+                isMenu
+                  ? () => openView(item.name)
+                  : undefined
+              }
               onClick={() => {
                 if (item.kind === "action") {
                   setView("default");
                   onOpenChat?.();
                   return;
                 }
-                setView(view === item.name ? "default" : item.name);
+                openView(view === item.name ? "default" : item.name);
               }}
             >
-              {item.Icon === "search" ? (
-                <HugeiconsIcon
-                  icon={Search01Icon}
-                  size={22}
-                  className={`transition-colors ${
-                    isActive ? "text-foreground" : "text-muted-foreground"
-                  }`}
-                />
-              ) : (
-                <item.Icon
+              {(ref) => (
+                <Icon
+                  ref={ref}
                   size={22}
                   className={`transition-colors ${
                     isActive ? "text-foreground" : "text-muted-foreground"
                   }`}
                 />
               )}
-            </motion.button>
+            </DockIconButton>
           );
         })}
       </motion.div>
