@@ -3,6 +3,7 @@ import "../styles/global.css";
 import { DATA } from "@/data/resume";
 import { CONFIG } from "@/data/config";
 import NavbarIsland from "@/components/NavbarIsland";
+import SiteFooter from "@/components/site-footer";
 import AuroraShell from "@/components/aurora-shell";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 import PostHog from "@/components/posthog.astro";
@@ -178,8 +179,12 @@ const { baseFontSize } = CONFIG.typography;
     </div>
 
     <!-- Main content wrapper - matches template's z-10 container exactly -->
-    <div class="relative z-10 max-w-2xl mx-auto py-12 pb-24 sm:py-24 px-6">
+    <div class="relative z-10 max-w-2xl mx-auto px-6 pt-12 pb-6 sm:pt-24">
       <slot />
+    </div>
+
+    <div class="relative z-10 w-full px-3 pt-8 pb-32 sm:px-4 md:px-6 lg:px-8">
+      <SiteFooter client:load />
     </div>
 
     <!-- Navbar: ThemeProvider + TooltipProvider + Navbar + chat button all in one React island -->

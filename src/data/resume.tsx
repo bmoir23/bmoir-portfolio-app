@@ -68,7 +68,7 @@ export const DATA = {
       heading: "My Recent Travels",
     },
     contact: {
-    order: 11, enabled: true,
+    order: 11, enabled: false,
       label: "Contact",
       heading: "Get in Touch",
       text: "Open to AI architecture, agentic systems, and AI engineering roles. Connect with me on LinkedIn or email me directly and I'll get back to you.",
