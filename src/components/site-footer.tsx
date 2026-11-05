@@ -32,12 +32,6 @@ export default function SiteFooter() {
   return (
     <footer id="contact" className="w-full">
       <div className="relative rounded-2xl border border-border bg-card">
-        <div className="absolute -top-4 left-1/2 z-10 -translate-x-1/2 rounded-xl border bg-primary px-4 py-1">
-          <span className="text-sm font-medium text-background">
-            {DATA.sections.contact.label}
-          </span>
-        </div>
-
         <div className="pointer-events-none absolute inset-x-0 top-0 h-1/2 overflow-hidden rounded-t-2xl">
           <FlickeringGrid
             className="h-full w-full"
