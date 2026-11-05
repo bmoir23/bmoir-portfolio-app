@@ -19,10 +19,12 @@ import {
 } from "@animateicons/react/lucide";
 import { useIconHover, type IconHandle } from "@animateicons/react";
 import {
+  useCallback,
   useMemo,
   useState,
   useRef,
   useEffect,
+  type MouseEvent as ReactMouseEvent,
   type ReactNode,
   type Ref,
 } from "react";
@@ -63,15 +65,46 @@ type NavItem =
       label: string;
       kind: "action";
       Icon: AnimateIconComponent;
+    }
+  | {
+      name: "contact";
+      label: string;
+      kind: "link";
+      href: string;
+      menu: "home";
+      Icon: AnimateIconComponent;
     };
 
 const MAIN_NAV: NavItem[] = [
   { Icon: HouseIcon, name: "home", label: "Home", kind: "menu" },
+  {
+    Icon: MailIcon,
+    name: "contact",
+    label: "Contact",
+    kind: "link",
+    href: "/contact",
+    menu: "home",
+  },
   { Icon: SearchIcon, name: "search", label: "Search", kind: "menu" },
   { Icon: ShareIcon, name: "notifications", label: "Social", kind: "menu" },
   { Icon: MessageCircleIcon, name: "chat", label: "AI Assistant", kind: "action" },
   { Icon: ContrastIcon, name: "theme", label: "Theme", kind: "menu" },
 ];
+
+function menuTarget(item: NavItem): MenuView | null {
+  switch (item.kind) {
+    case "menu":
+      return item.name;
+    case "link":
+      return item.menu;
+    case "action":
+      return null;
+    default: {
+      const _exhaustive: never = item;
+      return _exhaustive;
+    }
+  }
+}
 
 const HOME_ITEMS: {
   Icon: AnimateIconComponent;
@@ -115,7 +148,9 @@ export type BottomMenuProps = {
 type DockIconButtonProps = {
   label: string;
   active?: boolean;
+  current?: boolean;
   expanded?: boolean;
+  href?: string;
   onOpen?: () => void;
   onClick: () => void;
   children: (ref: Ref<IconHandle>) => ReactNode;
@@ -124,33 +159,58 @@ type DockIconButtonProps = {
 function DockIconButton({
   label,
   active = false,
+  current = false,
   expanded,
+  href,
   onOpen,
   onClick,
   children,
 }: DockIconButtonProps) {
   const { ref, triggerProps } = useIconHover({ trigger: "hover" });
+  const className = `p-1.5 sm:p-3 rounded-[16px] transition-colors ${
+    active ? "bg-accent" : "hover:bg-muted"
+  }`;
+  const interaction = {
+    whileHover: { scale: 1.06 },
+    whileTap: { scale: 0.96 },
+    transition: { type: "spring" as const, stiffness: 420, damping: 24 },
+    className,
+    onMouseEnter: (event: ReactMouseEvent<HTMLElement>) => {
+      triggerProps.onMouseEnter?.(
+        event as unknown as ReactMouseEvent<HTMLButtonElement>,
+      );
+      onOpen?.();
+    },
+    onMouseLeave: (event: ReactMouseEvent<HTMLElement>) => {
+      triggerProps.onMouseLeave?.(
+        event as unknown as ReactMouseEvent<HTMLButtonElement>,
+      );
+    },
+    onFocus: () => onOpen?.(),
+    onClick,
+  };
+
+  if (href) {
+    return (
+      <motion.a
+        href={href}
+        aria-label={label}
+        aria-haspopup="menu"
+        aria-expanded={expanded}
+        aria-current={current ? "page" : undefined}
+        {...interaction}
+      >
+        {children(ref)}
+      </motion.a>
+    );
+  }
 
   return (
     <motion.button
       type="button"
       aria-label={label}
       aria-expanded={expanded}
-      whileHover={{ scale: 1.06 }}
-      whileTap={{ scale: 0.96 }}
-      transition={{ type: "spring", stiffness: 420, damping: 24 }}
-      className={`p-3 rounded-[16px] transition-colors ${
-        active ? "bg-accent" : "hover:bg-muted"
-      }`}
-      onMouseEnter={(event) => {
-        triggerProps.onMouseEnter?.(event);
-        onOpen?.();
-      }}
-      onMouseLeave={(event) => {
-        triggerProps.onMouseLeave?.(event);
-      }}
-      onFocus={() => onOpen?.()}
-      onClick={onClick}
+      {...interaction}
     >
       {children(ref)}
     </motion.button>
@@ -163,6 +223,8 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
   const [elementRef] = useMeasure();
   const [hiddenRef, hiddenBounds] = useMeasure();
   const [view, setView] = useState<MenuView>("default");
+  const [openedBy, setOpenedBy] = useState<string | null>(null);
+  const [pathname, setPathname] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const { theme, setTheme } = useTheme();
 
@@ -173,15 +235,21 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
     }
   };
 
-  const openView = (next: MenuView) => {
+  const closeMenu = useCallback(() => {
+    setView("default");
+    setOpenedBy(null);
+  }, []);
+
+  const openView = (next: MenuView, source: string) => {
     clearCloseTimer();
     setView(next);
+    setOpenedBy(source);
   };
 
   const scheduleClose = () => {
     clearCloseTimer();
     closeTimerRef.current = setTimeout(() => {
-      setView("default");
+      closeMenu();
       closeTimerRef.current = null;
     }, CLOSE_DELAY_MS);
   };
@@ -191,12 +259,17 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
   }, []);
 
   useEffect(() => {
+    setPathname(window.location.pathname);
+  }, []);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         containerRef.current &&
         !containerRef.current.contains(event.target as Node)
       ) {
         setView("default");
+        setOpenedBy(null);
       }
     };
 
@@ -237,7 +310,7 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
                 key={text}
                 href={href}
                 className={`${sharedHover} flex items-center gap-3`}
-                onClick={() => setView("default")}
+                onClick={closeMenu}
               >
                 <Icon
                   size={20}
@@ -281,7 +354,7 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
                   key={text}
                   href={href}
                   className={`${sharedHover} flex-1 flex items-center justify-center gap-1.5 bg-muted hover:bg-accent`}
-                  onClick={() => setView("default")}
+                  onClick={closeMenu}
                 >
                   <Icon
                     size={14}
@@ -306,7 +379,7 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
                   target={isExternal ? "_blank" : undefined}
                   rel={isExternal ? "noopener noreferrer" : undefined}
                   className={`${sharedHover} flex items-center gap-3`}
-                  onClick={() => setView("default")}
+                  onClick={closeMenu}
                 >
                   <Icon
                     size={20}
@@ -352,7 +425,7 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
         return _exhaustive;
       }
     }
-  }, [view, activeTheme, searchQuery, socialLinks, setTheme]);
+  }, [view, activeTheme, searchQuery, socialLinks, setTheme, closeMenu]);
 
   return (
     <div
@@ -454,37 +527,55 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        className="flex items-center gap-1 bg-background/95 backdrop-blur-xl border border-border rounded-[18px] p-1 mt-3 z-10 shadow-[0_10px_40px_-18px_rgba(0,0,0,0.45)]"
+        className="flex items-center gap-0 sm:gap-1 bg-background/95 backdrop-blur-xl border border-border rounded-[18px] p-1 mt-3 z-10 shadow-[0_10px_40px_-18px_rgba(0,0,0,0.45)]"
       >
         {MAIN_NAV.map((item) => {
-          const isMenu = item.kind === "menu";
-          const isActive = isMenu && view === item.name;
+          const target = menuTarget(item);
+          const isMenuActive =
+            target !== null && view === target && openedBy === item.name;
+          const onContactPage =
+            item.kind === "link" &&
+            (pathname === item.href || pathname.startsWith(`${item.href}/`));
+          const isActive = isMenuActive || onContactPage;
           const Icon = item.Icon;
 
           return (
             <DockIconButton
               key={item.name}
               label={item.label}
+              href={item.kind === "link" ? item.href : undefined}
               active={isActive}
-              expanded={isMenu ? isActive : undefined}
+              current={onContactPage}
+              expanded={target ? isMenuActive : undefined}
               onOpen={
-                isMenu
-                  ? () => openView(item.name)
-                  : undefined
+                target ? () => openView(target, item.name) : undefined
               }
               onClick={() => {
-                if (item.kind === "action") {
-                  setView("default");
-                  onOpenChat?.();
-                  return;
+                switch (item.kind) {
+                  case "action":
+                    closeMenu();
+                    onOpenChat?.();
+                    return;
+                  case "link":
+                    return;
+                  case "menu":
+                    if (view === item.name && openedBy === item.name) {
+                      closeMenu();
+                    } else {
+                      openView(item.name, item.name);
+                    }
+                    return;
+                  default: {
+                    const _exhaustive: never = item;
+                    return _exhaustive;
+                  }
                 }
-                openView(view === item.name ? "default" : item.name);
               }}
             >
               {(ref) => (
                 <Icon
                   ref={ref}
-                  size={22}
+                  size={20}
                   className={`transition-colors ${
                     isActive ? "text-foreground" : "text-muted-foreground"
                   }`}
