@@ -2,7 +2,6 @@
 
 import {
   HouseIcon,
-  ShareIcon,
   GithubIcon,
   LinkedinIcon,
   MailIcon,
@@ -34,11 +33,10 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { DATA } from "@/data/resume";
 
-type MenuView = "default" | "home" | "search" | "notifications" | "theme";
+type MenuView = "default" | "home" | "search" | "social" | "theme";
 
 type AnimateIconComponent =
   | typeof HouseIcon
-  | typeof ShareIcon
   | typeof GithubIcon
   | typeof LinkedinIcon
   | typeof MailIcon
@@ -55,7 +53,7 @@ type AnimateIconComponent =
 
 type NavItem =
   | {
-      name: "home" | "search" | "notifications" | "theme";
+      name: "home" | "search" | "theme";
       label: string;
       kind: "menu";
       Icon: AnimateIconComponent;
@@ -71,7 +69,7 @@ type NavItem =
       label: string;
       kind: "link";
       href: string;
-      menu: "home";
+      menu: "social";
       Icon: AnimateIconComponent;
     };
 
@@ -83,10 +81,9 @@ const MAIN_NAV: NavItem[] = [
     label: "Contact",
     kind: "link",
     href: "/contact",
-    menu: "home",
+    menu: "social",
   },
   { Icon: SearchIcon, name: "search", label: "Search", kind: "menu" },
-  { Icon: ShareIcon, name: "notifications", label: "Social", kind: "menu" },
   { Icon: MessageCircleIcon, name: "chat", label: "AI Assistant", kind: "action" },
   { Icon: ContrastIcon, name: "theme", label: "Theme", kind: "menu" },
 ];
@@ -152,7 +149,8 @@ type DockIconButtonProps = {
   expanded?: boolean;
   href?: string;
   onOpen?: () => void;
-  onClick: () => void;
+  onClick: (event: ReactMouseEvent<HTMLElement>) => void;
+  buttonRef?: (node: HTMLElement | null) => void;
   children: (ref: Ref<IconHandle>) => ReactNode;
 };
 
@@ -164,6 +162,7 @@ function DockIconButton({
   href,
   onOpen,
   onClick,
+  buttonRef,
   children,
 }: DockIconButtonProps) {
   const { ref, triggerProps } = useIconHover({ trigger: "hover" });
@@ -193,6 +192,7 @@ function DockIconButton({
   if (href) {
     return (
       <motion.a
+        ref={buttonRef}
         href={href}
         aria-label={label}
         aria-haspopup="menu"
@@ -207,6 +207,7 @@ function DockIconButton({
 
   return (
     <motion.button
+      ref={buttonRef}
       type="button"
       aria-label={label}
       aria-expanded={expanded}
@@ -219,6 +220,7 @@ function DockIconButton({
 
 const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const anchorRefs = useRef<Partial<Record<string, HTMLElement | null>>>({});
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [elementRef] = useMeasure();
   const [hiddenRef, hiddenBounds] = useMeasure();
@@ -367,7 +369,7 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
           </div>
         );
 
-      case "notifications":
+      case "social":
         return (
           <div className="space-y-0.5 min-w-[210px] p-[6px] py-0.5">
             {socialLinks.map(({ key, name, url, Icon }) => {
@@ -427,6 +429,20 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
     }
   }, [view, activeTheme, searchQuery, socialLinks, setTheme, closeMenu]);
 
+  const menuShift = (() => {
+    if (view !== "social" || typeof window === "undefined") return 0;
+    const button = anchorRefs.current.contact;
+    const container = containerRef.current;
+    if (!button || !container) return 0;
+    const containerBox = container.getBoundingClientRect();
+    const buttonBox = button.getBoundingClientRect();
+    return (
+      buttonBox.left +
+      buttonBox.width / 2 -
+      (containerBox.left + containerBox.width / 2)
+    );
+  })();
+
   return (
     <div
       ref={containerRef}
@@ -456,6 +472,7 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
               scaleX: 0.95,
               height: 0,
               width: 0,
+              x: menuShift,
               originY: 1,
               originX: 0.5,
             }}
@@ -465,6 +482,7 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
               scaleX: 1,
               height: hiddenBounds.height || "auto",
               width: hiddenBounds.width || "auto",
+              x: menuShift,
               originY: 1,
               originX: 0.5,
             }}
@@ -474,6 +492,7 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
               scaleX: 0.95,
               height: 0,
               width: 0,
+              x: menuShift,
               originY: 1,
               originX: 0.5,
             }}
@@ -547,17 +566,32 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
               active={isActive}
               current={onContactPage}
               expanded={target ? isMenuActive : undefined}
+              buttonRef={
+                item.kind === "link"
+                  ? (node) => {
+                      anchorRefs.current[item.name] = node;
+                    }
+                  : undefined
+              }
               onOpen={
                 target ? () => openView(target, item.name) : undefined
               }
-              onClick={() => {
+              onClick={(event) => {
                 switch (item.kind) {
                   case "action":
                     closeMenu();
                     onOpenChat?.();
                     return;
-                  case "link":
+                  case "link": {
+                    const canHover = window.matchMedia(
+                      "(hover: hover) and (pointer: fine)",
+                    ).matches;
+                    if (canHover) return;
+                    if (view === item.menu && openedBy === item.name) return;
+                    event.preventDefault();
+                    openView(item.menu, item.name);
                     return;
+                  }
                   case "menu":
                     if (view === item.name && openedBy === item.name) {
                       closeMenu();
