@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowUpRight, Globe } from "lucide-react";
 import { Icons } from "@/components/icons";
 import { DATA } from "@/data/resume";
 import BlogPostBody from "@/components/blog-post-body";
-import { createPosthogClient } from "@/lib/posthog";
+import { createPosthogClient, getVisitorIdentity } from "@/lib/posthog";
 import BackButton from "@/components/ui/back-button.astro";
 
 export const prerender = false;
@@ -29,13 +29,13 @@ if (!project) {
 }
 
 const posthog = createPosthogClient(Astro.locals);
-const viewerIp =
-  Astro.request.headers.get("cf-connecting-ip") ?? Astro.clientAddress ?? "anonymous";
+const visitor = getVisitorIdentity(Astro.locals, Astro.cookies);
 try {
   await posthog.captureImmediate({
-    distinctId: viewerIp,
+    distinctId: visitor.distinctId,
     event: "project viewed",
     properties: {
+      ...visitor.properties,
       project_slug: slug,
       project_title: project.title,
       technologies: project.technologies ?? [],
