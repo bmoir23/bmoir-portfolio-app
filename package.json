@@ -37,7 +37,7 @@
     "@tailwindcss/vite": "^4.2.4",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "astro": "^7.3.2",
+    "astro": "^7.4.7",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "figma-squircle": "^1.1.0",
