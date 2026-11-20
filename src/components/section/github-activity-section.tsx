@@ -1,13 +1,28 @@
+import { lazy, Suspense } from "react";
 import BlurFade from "@/components/magicui/blur-fade";
-import { GitHubActivity } from "@/components/ui/github-activity";
 import { DATA } from "@/data/resume";
 
 const BLUR_FADE_DELAY = 0.04;
+
+const GitHubActivity = lazy(() =>
+  import("@/components/ui/github-activity").then((mod) => ({
+    default: mod.GitHubActivity,
+  })),
+);
 
 function deriveGithubUsername(url: string): string | undefined {
   if (!url) return undefined;
   const match = url.match(/github\.com\/([^/?#]+)/);
   return match?.[1];
+}
+
+function GitHubActivitySkeleton() {
+  return (
+    <div
+      className="mx-auto h-40 w-full max-w-full animate-pulse rounded-2xl border border-border bg-muted/40"
+      aria-hidden
+    />
+  );
 }
 
 export default function GithubActivitySection() {
@@ -45,12 +60,14 @@ export default function GithubActivitySection() {
                 to display your contribution graph.
               </p>
             ) : (
-              <GitHubActivity
-                username={username}
-                months={12}
-                showMonths
-                className="mx-auto max-w-full"
-              />
+              <Suspense fallback={<GitHubActivitySkeleton />}>
+                <GitHubActivity
+                  username={username}
+                  months={12}
+                  showMonths
+                  className="mx-auto max-w-full"
+                />
+              </Suspense>
             )}
           </div>
         </BlurFade>
