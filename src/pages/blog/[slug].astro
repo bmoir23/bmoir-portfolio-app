@@ -4,7 +4,7 @@ import { getPostBySlug, isSanityConfigured } from "@/lib/sanity";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { DATA } from "@/data/resume";
 import BlogPostBody from "@/components/blog-post-body";
-import { createPosthogClient } from "@/lib/posthog";
+import { createPosthogClient, getVisitorIdentity } from "@/lib/posthog";
 import BackButton from "@/components/ui/back-button.astro";
 
 export const prerender = false;
@@ -38,13 +38,13 @@ const readingTime =
   Math.max(1, Math.round(post.bodyMarkdown.trim().split(/\s+/).length / 200));
 
 const posthog = createPosthogClient(Astro.locals);
-const viewerIp =
-  Astro.request.headers.get("cf-connecting-ip") ?? Astro.clientAddress ?? "anonymous";
+const visitor = getVisitorIdentity(Astro.locals, Astro.cookies);
 try {
   await posthog.captureImmediate({
-    distinctId: viewerIp,
+    distinctId: visitor.distinctId,
     event: 'blog post viewed',
     properties: {
+      ...visitor.properties,
       post_slug: slug,
       post_title: post.title,
       post_author: post.author?.name ?? null,
