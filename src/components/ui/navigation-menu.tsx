@@ -179,6 +179,8 @@ export function AnimatedNavFramer({ className }: { className?: string }) {
               !isExpanded && "pointer-events-none absolute opacity-0",
             )}
             aria-hidden={!isExpanded}
+            // Keep collapsed links out of the tab order (aria-hidden alone is not enough).
+            {...(!isExpanded ? { inert: true } : {})}
           >
             {navItems.map((item) => {
               const active = isActive(item.href);
@@ -187,6 +189,7 @@ export function AnimatedNavFramer({ className }: { className?: string }) {
                   key={item.name}
                   href={item.href}
                   variants={itemVariants}
+                  tabIndex={isExpanded ? undefined : -1}
                   onClick={() => {
                     if (!item.href.includes("#")) {
                       setPathname(item.href);
