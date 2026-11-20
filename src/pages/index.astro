@@ -5,5 +5,10 @@ import HomePage from "@/components/HomePage";
 ---
 
 <Layout>
-  <HomePage client:only="react" />
+  <!--
+    client:load (not client:only) so Astro SSR's the homepage HTML.
+    client:only left the first paint blank until the full React island downloaded —
+    a major cause of the "minute to render" feel.
+  -->
+  <HomePage client:load />
 </Layout>
