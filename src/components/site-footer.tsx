@@ -53,13 +53,12 @@ export default function SiteFooter() {
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 lg:gap-10">
             <div className="flex min-w-0 items-start gap-4">
-              {/* Replace public/brand-logo.svg when the finished brand mark is ready. */}
               <img
-                src="/brand-logo.svg"
-                alt="Brian Moir brand logo placeholder"
+                src="/brand-logo.png"
+                alt="Brian Moir brand logo"
                 width={64}
                 height={64}
-                className="size-16 shrink-0 rounded-2xl border border-dashed border-muted-foreground/50 bg-background object-contain"
+                className="size-16 shrink-0 object-contain"
               />
               <div className="min-w-0 text-left">
                 <p className="font-semibold tracking-tight">{DATA.name}</p>
