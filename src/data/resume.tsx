@@ -39,7 +39,7 @@ export const DATA = {
     order: 5, enabled: true,
       label: "Coding Activity",
       heading: "GitHub Activity Graph",
-      text: "Recent GitHub contributions, drawn as a skyline. Switch between the 3D city and a 2D heatmap.",
+      text: "A year of contributions on a squircle heatmap, with the busiest repositories stacked in a drawer over the grid.",
     },
     about: { order: 2, enabled: true, heading: "About" },
     work: { order: 3, enabled: true, heading: "Work Experience", presentLabel: "Present" },
@@ -68,7 +68,7 @@ export const DATA = {
       heading: "My Recent Travels",
     },
     contact: {
-    order: 11, enabled: true,
+    order: 11, enabled: false,
       label: "Contact",
       heading: "Get in Touch",
       text: "Open to AI architecture, agentic systems, and AI engineering roles. Connect with me on LinkedIn or email me directly and I'll get back to you.",

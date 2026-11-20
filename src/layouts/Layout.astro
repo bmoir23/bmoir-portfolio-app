@@ -3,6 +3,8 @@ import "../styles/global.css";
 import { DATA } from "@/data/resume";
 import { CONFIG } from "@/data/config";
 import NavbarIsland from "@/components/NavbarIsland";
+import TopNavIsland from "@/components/TopNavIsland";
+import SiteFooter from "@/components/site-footer";
 import AuroraShell from "@/components/aurora-shell";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 import PostHog from "@/components/posthog.astro";
@@ -161,12 +163,12 @@ const { baseFontSize } = CONFIG.typography;
   </head>
   <body class="min-h-screen bg-background font-sans antialiased relative">
     <!-- Subtle aurora gradient mesh — theme-aware, sits behind all page content -->
-    <AuroraShell client:load />
+    <AuroraShell client:idle />
 
     <!-- FlickeringGrid header background - matches template exactly -->
     <div class="absolute inset-0 top-0 left-0 right-0 h-25 overflow-hidden z-0">
       <FlickeringGrid
-        client:load
+        client:idle
         className="h-full w-full"
         squareSize={2}
         gridGap={2}
@@ -177,13 +179,20 @@ const { baseFontSize } = CONFIG.typography;
       />
     </div>
 
-    <!-- Main content wrapper - matches template's z-10 container exactly -->
-    <div class="relative z-10 max-w-2xl mx-auto py-12 pb-24 sm:py-24 px-6">
+    <!-- Main content wrapper — extra top padding clears the fixed animated header -->
+    <div class="relative z-10 max-w-2xl mx-auto px-6 pt-20 pb-6 sm:pt-28">
       <slot />
     </div>
 
-    <!-- Navbar: ThemeProvider + TooltipProvider + Navbar + chat button all in one React island -->
-    <NavbarIsland client:load />
+    <div class="relative z-10 w-full px-3 pt-4 pb-32 sm:px-4 md:px-6 lg:px-8">
+      <SiteFooter client:idle />
+    </div>
+
+    <!-- Top animated header — small island, load early for first paint -->
+    <TopNavIsland client:load />
+
+    <!-- Bottom dock + chat — heavier (@animateicons); defer until idle -->
+    <NavbarIsland client:idle />
 
     <!-- Cloudflare Web Analytics -->
     <script

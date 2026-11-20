@@ -21,8 +21,23 @@ type ContactFormProps = {
   siteKey?: string;
 };
 
+function workWithMeDefaults(): { email: string; subject: string } {
+  if (typeof window === "undefined") return { email: "", subject: "" };
+  const params = new URLSearchParams(window.location.search);
+  const rawEmail = (params.get("email") ?? "").trim();
+  const email =
+    rawEmail.length <= 320 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)
+      ? rawEmail
+      : "";
+  return {
+    email,
+    subject: params.get("intent") === "work" ? "Work with me" : "",
+  };
+}
+
 export default function ContactForm({ siteKey }: ContactFormProps) {
   const turnstileSiteKey = siteKey || ENV_TURNSTILE_SITE_KEY;
+  const [defaults] = useState(workWithMeDefaults);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -147,6 +162,7 @@ export default function ContactForm({ siteKey }: ContactFormProps) {
             autoComplete="email"
             disabled={submitting}
             placeholder="you@example.com"
+            defaultValue={defaults.email}
             className={FIELD_CLASS}
           />
         </div>
@@ -163,6 +179,7 @@ export default function ContactForm({ siteKey }: ContactFormProps) {
           maxLength={300}
           disabled={submitting}
           placeholder="What's this about?"
+          defaultValue={defaults.subject}
           className={FIELD_CLASS}
         />
       </div>

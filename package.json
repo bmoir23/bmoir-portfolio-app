@@ -16,6 +16,7 @@
     "seed:sanity": "node scripts/seed-sanity.mjs"
   },
   "dependencies": {
+    "@animateicons/react": "^0.13.0",
     "@astrojs/cloudflare": "^14.3.1",
     "@astrojs/markdown-remark": "^7.3.1",
     "@astrojs/mdx": "^8.0.1",
@@ -36,9 +37,10 @@
     "@tailwindcss/vite": "^4.2.4",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "astro": "^7.3.2",
+    "astro": "^7.4.7",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "figma-squircle": "^1.1.0",
     "lucide-react": "^1.14.0",
     "motion": "^12.38.0",
     "next-themes": "^0.4.6",
@@ -46,6 +48,7 @@
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-markdown": "^10.1.0",
+    "react-use-measure": "^2.1.7",
     "rehype-pretty-code": "^0.14.3",
     "remark-gfm": "^4.0.1",
     "shiki": "^4.0.2",
