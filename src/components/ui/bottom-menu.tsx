@@ -357,7 +357,9 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
                 >
                   <Icon
                     size={20}
-                    className="text-muted-foreground group-hover:text-foreground transition-all duration-75"
+                    width={20}
+                    height={20}
+                    className="size-5 shrink-0 text-muted-foreground group-hover:text-foreground transition-all duration-75"
                   />
                   <span className="transition-all duration-75">{name}</span>
                 </a>
@@ -449,6 +451,8 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
 
       {/* Toolbar */}
       <motion.div
+        role="navigation"
+        aria-label="Primary dock"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}

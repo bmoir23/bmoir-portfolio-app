@@ -45,11 +45,19 @@ const BlurFade = ({
 }: BlurFadeProps) => {
   const ref = useRef(null);
   const reducedMotion = usePrefersReducedMotion();
+  // Start visible so SSR / no-JS / failed hydration never leave content at opacity 0.
+  // Once mounted we gate on IntersectionObserver when `inView` is requested.
+  const [mounted, setMounted] = useState(false);
   const inViewResult = useInView(ref, {
     once: true,
     ...(inViewMargin ? { margin: inViewMargin as `${number}px` } : {}),
   });
-  const isInView = !inView || inViewResult;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isInView = !inView || !mounted || inViewResult;
 
   // Opacity/translate only — CSS filter blur forced expensive compositing and
   // contributed to fixed-dock scroll sticking.
@@ -69,13 +77,14 @@ const BlurFade = ({
     <AnimatePresence>
       <motion.div
         ref={ref}
-        initial="hidden"
+        // SSR / pre-mount: render visible content. After mount, animate in-view.
+        initial={mounted ? "hidden" : false}
         animate={isInView ? "visible" : "hidden"}
         exit="hidden"
         variants={combinedVariants}
         transition={{
-          delay: reducedMotion ? 0 : 0.04 + delay,
-          duration: reducedMotion ? 0.01 : duration,
+          delay: reducedMotion || !mounted ? 0 : 0.04 + delay,
+          duration: reducedMotion || !mounted ? 0.01 : duration,
           ease: "easeOut",
         }}
         className={className}

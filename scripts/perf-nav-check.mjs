@@ -42,23 +42,31 @@ async function main() {
   const topNav = await page.locator('header[aria-label="Primary"]').count();
   check("no-top-nav", topNav === 0, { count: topNav });
 
-  const dockAppearedAt = await page
-    .waitForSelector('nav, [aria-label="Home"], button[aria-label="Home"]', {
-      timeout: MAX_DOCK_APPEAR_MS,
-    })
-    .then(() => Date.now() - started)
-    .catch(() => null);
+  // Dock-specific control — Theme only exists in the dock, not the footer sitemap.
+  const dockTheme = page.getByRole("navigation", { name: "Primary dock" }).getByRole(
+    "button",
+    { name: "Theme" },
+  );
+  let dockAppearedAt = null;
+  try {
+    await dockTheme.waitFor({ state: "visible", timeout: MAX_DOCK_APPEAR_MS });
+    dockAppearedAt = Date.now() - started;
+  } catch {
+    dockAppearedAt = null;
+  }
 
-  // Prefer the dock home control specifically.
-  const homeBtn = page.getByRole("button", { name: "Home" });
-  const homeLink = page.getByRole("link", { name: "Home" });
-  const hasDock =
-    (await homeBtn.count()) > 0 || (await homeLink.count()) > 0;
+  const hasDock = (await dockTheme.count()) > 0 && (await dockTheme.isVisible());
   check("dock-present", hasDock, { appearMs: dockAppearedAt });
   if (dockAppearedAt != null) {
     check("dock-appear-budget", dockAppearedAt <= MAX_DOCK_APPEAR_MS, {
       appearMs: dockAppearedAt,
       budgetMs: MAX_DOCK_APPEAR_MS,
+    });
+  } else {
+    check("dock-appear-budget", false, {
+      appearMs: null,
+      budgetMs: MAX_DOCK_APPEAR_MS,
+      reason: "dock Theme control never became visible",
     });
   }
 
@@ -83,10 +91,13 @@ async function main() {
           if (last) lcp = last.startTime;
         });
         po.observe({ type: "largest-contentful-paint", buffered: true });
-        setTimeout(() => {
-          po.disconnect();
-          resolve(null);
-        }, 1500);
+        // Nudge layout so LCP can settle on hero text/image.
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            po.disconnect();
+            resolve(null);
+          }, 2000);
+        });
       } catch {
         resolve(null);
       }
@@ -107,19 +118,30 @@ async function main() {
       lcpMs: vitals.lcp,
       budgetMs: MAX_LCP_MS,
     });
+  } else {
+    check("lcp-budget", false, {
+      lcpMs: null,
+      budgetMs: MAX_LCP_MS,
+      reason: "LCP was not measurable",
+    });
   }
 
   // Scroll jank probe: long tasks while the page scrolls under a fixed dock.
+  // Ignore buffered longtasks that occurred before the probe starts.
   const scrollProbe = await page.evaluate(async () => {
     const longTasks = [];
+    const probeStart = performance.now();
     let observer = null;
     try {
       observer = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
-          longTasks.push(entry.duration);
+          if (entry.startTime >= probeStart) {
+            longTasks.push(entry.duration);
+          }
         }
       });
-      observer.observe({ type: "longtask", buffered: true });
+      // buffered:false so we only capture tasks from this scroll window.
+      observer.observe({ type: "longtask", buffered: false });
     } catch {
       // longtask not supported in some engines — fall through with empty list
     }
@@ -144,6 +166,7 @@ async function main() {
       maxLongTask,
       longTaskCount: longTasks.length,
       longTasks: longTasks.slice(0, 10),
+      probeStart,
     };
   });
   report.metrics.scroll = scrollProbe;
@@ -158,14 +181,10 @@ async function main() {
   );
 
   // Dock should stay fixed (not scroll away) — compare y before/after scroll.
-  const dockBoxBefore = await page
-    .getByRole("button", { name: "Theme" })
-    .boundingBox();
+  const dockBoxBefore = await dockTheme.boundingBox();
   await page.evaluate(() => window.scrollTo(0, 1200));
   await page.waitForTimeout(200);
-  const dockBoxAfter = await page
-    .getByRole("button", { name: "Theme" })
-    .boundingBox();
+  const dockBoxAfter = await dockTheme.boundingBox();
   const dockStuck =
     dockBoxBefore &&
     dockBoxAfter &&
@@ -176,7 +195,7 @@ async function main() {
   });
 
   // Open theme submenu and ensure it closes (not sticky-open).
-  await page.getByRole("button", { name: "Theme" }).click();
+  await dockTheme.click();
   await page.waitForTimeout(100);
   const themeOpen = await page.getByRole("button", { name: "Dark" }).count();
   check("theme-menu-opens", themeOpen > 0, { count: themeOpen });
