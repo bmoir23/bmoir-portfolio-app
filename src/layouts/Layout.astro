@@ -3,7 +3,6 @@ import "../styles/global.css";
 import { DATA } from "@/data/resume";
 import { CONFIG } from "@/data/config";
 import NavbarIsland from "@/components/NavbarIsland";
-import TopNavIsland from "@/components/TopNavIsland";
 import SiteFooter from "@/components/site-footer";
 import AuroraShell from "@/components/aurora-shell";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
@@ -179,8 +178,8 @@ const { baseFontSize } = CONFIG.typography;
       />
     </div>
 
-    <!-- Main content wrapper — extra top padding clears the fixed animated header -->
-    <div class="relative z-10 max-w-2xl mx-auto px-6 pt-20 pb-6 sm:pt-28">
+    <!-- Main content wrapper — dock-only nav, no top header clearance -->
+    <div class="relative z-10 max-w-2xl mx-auto px-6 pt-12 pb-6 sm:pt-24">
       <slot />
     </div>
 
@@ -188,11 +187,11 @@ const { baseFontSize } = CONFIG.typography;
       <SiteFooter client:idle />
     </div>
 
-    <!-- Top animated header — small island, load early for first paint -->
-    <TopNavIsland client:load />
-
-    <!-- Bottom dock + chat — heavier (@animateicons); defer until idle -->
-    <NavbarIsland client:idle />
+    <!--
+      Dock is primary navigation again (top nav removed).
+      client:load so it appears with first paint; keep it light (lucide, no @animateicons).
+    -->
+    <NavbarIsland client:load />
 
     <!-- Cloudflare Web Analytics -->
     <script

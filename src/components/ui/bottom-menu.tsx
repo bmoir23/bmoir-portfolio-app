@@ -1,68 +1,53 @@
 "use client";
 
 import {
-  HouseIcon,
-  GithubIcon,
-  LinkedinIcon,
-  MailIcon,
-  MessageCircleIcon,
-  ContrastIcon,
-  SunIcon,
-  MoonIcon,
-  LaptopMinimalIcon,
-  SearchIcon,
-  BookOpenIcon,
-  FolderIcon,
-  FilterIcon,
-  TrendingUpIcon,
-} from "@animateicons/react/lucide";
-import { useIconHover, type IconHandle } from "@animateicons/react";
+  House,
+  Mail,
+  MessageCircle,
+  Contrast,
+  Sun,
+  Moon,
+  LaptopMinimal,
+  Search,
+  BookOpen,
+  Folder,
+  Filter,
+  TrendingUp,
+  type LucideIcon,
+} from "lucide-react";
 import {
   useCallback,
   useMemo,
   useState,
   useRef,
   useEffect,
+  type ComponentType,
   type MouseEvent as ReactMouseEvent,
   type ReactNode,
-  type Ref,
+  type SVGProps,
 } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import useMeasure from "react-use-measure";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { DATA } from "@/data/resume";
+import { Icons, type IconProps } from "@/components/icons";
+
+type DockIcon = LucideIcon | ComponentType<IconProps | SVGProps<SVGSVGElement>>;
 
 type MenuView = "default" | "home" | "search" | "social" | "theme";
-
-type AnimateIconComponent =
-  | typeof HouseIcon
-  | typeof GithubIcon
-  | typeof LinkedinIcon
-  | typeof MailIcon
-  | typeof MessageCircleIcon
-  | typeof ContrastIcon
-  | typeof SunIcon
-  | typeof MoonIcon
-  | typeof LaptopMinimalIcon
-  | typeof SearchIcon
-  | typeof BookOpenIcon
-  | typeof FolderIcon
-  | typeof FilterIcon
-  | typeof TrendingUpIcon;
 
 type NavItem =
   | {
       name: "home" | "search" | "theme";
       label: string;
       kind: "menu";
-      Icon: AnimateIconComponent;
+      Icon: DockIcon;
     }
   | {
       name: "chat";
       label: string;
       kind: "action";
-      Icon: AnimateIconComponent;
+      Icon: DockIcon;
     }
   | {
       name: "contact";
@@ -70,22 +55,22 @@ type NavItem =
       kind: "link";
       href: string;
       menu: "social";
-      Icon: AnimateIconComponent;
+      Icon: DockIcon;
     };
 
 const MAIN_NAV: NavItem[] = [
-  { Icon: HouseIcon, name: "home", label: "Home", kind: "menu" },
+  { Icon: House, name: "home", label: "Home", kind: "menu" },
   {
-    Icon: MailIcon,
+    Icon: Mail,
     name: "contact",
     label: "Contact",
     kind: "link",
     href: "/contact",
     menu: "social",
   },
-  { Icon: SearchIcon, name: "search", label: "Search", kind: "menu" },
-  { Icon: MessageCircleIcon, name: "chat", label: "AI Assistant", kind: "action" },
-  { Icon: ContrastIcon, name: "theme", label: "Theme", kind: "menu" },
+  { Icon: Search, name: "search", label: "Search", kind: "menu" },
+  { Icon: MessageCircle, name: "chat", label: "AI Assistant", kind: "action" },
+  { Icon: Contrast, name: "theme", label: "Theme", kind: "menu" },
 ];
 
 function menuTarget(item: NavItem): MenuView | null {
@@ -104,35 +89,35 @@ function menuTarget(item: NavItem): MenuView | null {
 }
 
 const HOME_ITEMS: {
-  Icon: AnimateIconComponent;
+  Icon: DockIcon;
   text: string;
   href: string;
 }[] = [
-  { Icon: HouseIcon, text: "Home", href: "/" },
-  { Icon: BookOpenIcon, text: "Blog", href: "/blog" },
-  { Icon: FolderIcon, text: "Projects", href: "/projects" },
-  { Icon: MailIcon, text: "Contact", href: "/contact" },
+  { Icon: House, text: "Home", href: "/" },
+  { Icon: BookOpen, text: "Blog", href: "/blog" },
+  { Icon: Folder, text: "Projects", href: "/projects" },
+  { Icon: Mail, text: "Contact", href: "/contact" },
 ];
 
 const SEARCH_OPTIONS: {
-  Icon: AnimateIconComponent;
+  Icon: DockIcon;
   text: string;
   href: string;
 }[] = [
-  { Icon: FilterIcon, text: "Blog", href: "/blog" },
-  { Icon: TrendingUpIcon, text: "Projects", href: "/projects" },
+  { Icon: Filter, text: "Blog", href: "/blog" },
+  { Icon: TrendingUp, text: "Projects", href: "/projects" },
 ];
 
-const SOCIAL_ICON_MAP: Record<string, AnimateIconComponent> = {
-  GitHub: GithubIcon,
-  LinkedIn: LinkedinIcon,
-  email: MailIcon,
+const SOCIAL_ICON_MAP: Record<string, DockIcon> = {
+  GitHub: Icons.github,
+  LinkedIn: Icons.linkedin,
+  email: Mail,
 };
 
 const THEME_OPTIONS = [
-  { key: "light" as const, Icon: SunIcon, text: "Light" },
-  { key: "dark" as const, Icon: MoonIcon, text: "Dark" },
-  { key: "system" as const, Icon: LaptopMinimalIcon, text: "System" },
+  { key: "light" as const, Icon: Sun, text: "Light" },
+  { key: "dark" as const, Icon: Moon, text: "Dark" },
+  { key: "system" as const, Icon: LaptopMinimal, text: "System" },
 ];
 
 const CLOSE_DELAY_MS = 180;
@@ -151,7 +136,7 @@ type DockIconButtonProps = {
   onOpen?: () => void;
   onClick: (event: ReactMouseEvent<HTMLElement>) => void;
   buttonRef?: (node: HTMLElement | null) => void;
-  children: (ref: Ref<IconHandle>) => ReactNode;
+  children: ReactNode;
 };
 
 function DockIconButton({
@@ -165,7 +150,6 @@ function DockIconButton({
   buttonRef,
   children,
 }: DockIconButtonProps) {
-  const { ref, triggerProps } = useIconHover({ trigger: "hover" });
   const className = `p-1.5 sm:p-3 rounded-[16px] transition-colors ${
     active ? "bg-accent" : "hover:bg-muted"
   }`;
@@ -174,17 +158,7 @@ function DockIconButton({
     whileTap: { scale: 0.96 },
     transition: { type: "spring" as const, stiffness: 420, damping: 24 },
     className,
-    onMouseEnter: (event: ReactMouseEvent<HTMLElement>) => {
-      triggerProps.onMouseEnter?.(
-        event as unknown as ReactMouseEvent<HTMLButtonElement>,
-      );
-      onOpen?.();
-    },
-    onMouseLeave: (event: ReactMouseEvent<HTMLElement>) => {
-      triggerProps.onMouseLeave?.(
-        event as unknown as ReactMouseEvent<HTMLButtonElement>,
-      );
-    },
+    onMouseEnter: () => onOpen?.(),
     onFocus: () => onOpen?.(),
     onClick,
   };
@@ -200,7 +174,7 @@ function DockIconButton({
         aria-current={current ? "page" : undefined}
         {...interaction}
       >
-        {children(ref)}
+        {children}
       </motion.a>
     );
   }
@@ -213,7 +187,7 @@ function DockIconButton({
       aria-expanded={expanded}
       {...interaction}
     >
-      {children(ref)}
+      {children}
     </motion.button>
   );
 }
@@ -222,8 +196,6 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const anchorRefs = useRef<Partial<Record<string, HTMLElement | null>>>({});
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [elementRef] = useMeasure();
-  const [hiddenRef, hiddenBounds] = useMeasure();
   const [view, setView] = useState<MenuView>("default");
   const [openedBy, setOpenedBy] = useState<string | null>(null);
   const [pathname, setPathname] = useState("");
@@ -291,7 +263,7 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
           key,
           name: social.name,
           url: social.url,
-          Icon: SOCIAL_ICON_MAP[key] ?? MailIcon,
+          Icon: SOCIAL_ICON_MAP[key] ?? Mail,
         })),
     [],
   );
@@ -315,8 +287,9 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
                 onClick={closeMenu}
               >
                 <Icon
-                  size={20}
-                  className="text-muted-foreground group-hover:text-foreground transition-all duration-75"
+                  width={20}
+                  height={20}
+                  className="size-5 text-muted-foreground group-hover:text-foreground transition-all duration-75"
                 />
                 <span className="transition-all duration-75">{text}</span>
               </a>
@@ -337,10 +310,8 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
                   : "/blog";
               }}
             >
-              <SearchIcon
-                size={17}
-                isAnimated={false}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+              <Search
+                className="absolute left-3 top-1/2 size-[17px] -translate-y-1/2 text-muted-foreground pointer-events-none"
               />
               <input
                 type="text"
@@ -359,8 +330,9 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
                   onClick={closeMenu}
                 >
                   <Icon
-                    size={14}
-                    className="text-muted-foreground group-hover:text-foreground transition-all duration-75"
+                    width={14}
+                    height={14}
+                    className="size-3.5 text-muted-foreground group-hover:text-foreground transition-all duration-75"
                   />
                   <span className="transition-all duration-75">{text}</span>
                 </a>
@@ -409,8 +381,9 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
                 }`}
               >
                 <Icon
-                  size={18}
-                  className={`transition-all duration-75 ${
+                  width={18}
+                  height={18}
+                  className={`size-[18px] transition-all duration-75 ${
                     activeTheme === key
                       ? "text-foreground"
                       : "text-muted-foreground"
@@ -450,92 +423,25 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
       onMouseEnter={clearCloseTimer}
       onMouseLeave={scheduleClose}
     >
-      {/* Hidden for measurement */}
-      <div
-        ref={hiddenRef}
-        className="absolute left-[-9999px] top-[-9999px] invisible pointer-events-none"
-        aria-hidden
-      >
-        <div className="rounded-[18px] bg-background/95 border border-border py-1">
-          {content}
-        </div>
-      </div>
-
-      {/* Animated submenu */}
-      <AnimatePresence mode="wait">
+      {/*
+        Submenu: opacity + translate only (no height/width/filter animations).
+        Animating filter/size on a fixed dock was a major cause of scroll sticking.
+      */}
+      <AnimatePresence>
         {view !== "default" && (
           <motion.div
             key="submenu"
-            initial={{
-              opacity: 0,
-              scaleY: 0.9,
-              scaleX: 0.95,
-              height: 0,
-              width: 0,
-              x: menuShift,
-              originY: 1,
-              originX: 0.5,
-            }}
-            animate={{
-              opacity: 1,
-              scaleY: 1,
-              scaleX: 1,
-              height: hiddenBounds.height || "auto",
-              width: hiddenBounds.width || "auto",
-              x: menuShift,
-              originY: 1,
-              originX: 0.5,
-            }}
-            exit={{
-              opacity: 0,
-              scaleY: 0.9,
-              scaleX: 0.95,
-              height: 0,
-              width: 0,
-              x: menuShift,
-              originY: 1,
-              originX: 0.5,
-            }}
+            initial={{ opacity: 0, y: 8, x: menuShift }}
+            animate={{ opacity: 1, y: 0, x: menuShift }}
+            exit={{ opacity: 0, y: 6, x: menuShift }}
             transition={{
-              duration: 0.3,
-              ease: [0.45, 0, 0.25, 1],
+              duration: 0.18,
+              ease: [0.22, 1, 0.36, 1],
             }}
-            style={{
-              transformOrigin: "bottom center",
-            }}
-            className="absolute bottom-[70px] overflow-hidden"
+            className="absolute bottom-[70px]"
           >
-            <div
-              ref={elementRef}
-              className="rounded-[18px] bg-background/95 backdrop-blur-xl border border-border shadow-[0_10px_40px_-18px_rgba(0,0,0,0.45)]"
-            >
-              <AnimatePresence initial={false} mode="popLayout">
-                <motion.div
-                  key={view}
-                  initial={{
-                    opacity: 0,
-                    scale: 0.96,
-                    filter: "blur(10px)",
-                  }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                    filter: "blur(0px)",
-                  }}
-                  exit={{
-                    opacity: 0,
-                    scale: 0.95,
-                    filter: "blur(12px)",
-                  }}
-                  transition={{
-                    duration: 0.25,
-                    ease: [0.42, 0, 0.58, 1],
-                  }}
-                  className="py-1"
-                >
-                  {content}
-                </motion.div>
-              </AnimatePresence>
+            <div className="rounded-[18px] bg-background/95 backdrop-blur-md border border-border shadow-[0_10px_40px_-18px_rgba(0,0,0,0.45)] py-1">
+              {content}
             </div>
           </motion.div>
         )}
@@ -545,8 +451,8 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        className="flex items-center gap-0 sm:gap-1 bg-background/95 backdrop-blur-xl border border-border rounded-[18px] p-1 mt-3 z-10 shadow-[0_10px_40px_-18px_rgba(0,0,0,0.45)]"
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className="flex items-center gap-0 sm:gap-1 bg-background/95 backdrop-blur-md border border-border rounded-[18px] p-1 mt-3 z-10 shadow-[0_10px_40px_-18px_rgba(0,0,0,0.45)]"
       >
         {MAIN_NAV.map((item) => {
           const target = menuTarget(item);
@@ -606,15 +512,14 @@ const BottomMenu = ({ onOpenChat, className }: BottomMenuProps) => {
                 }
               }}
             >
-              {(ref) => (
-                <Icon
-                  ref={ref}
-                  size={20}
-                  className={`transition-colors ${
-                    isActive ? "text-foreground" : "text-muted-foreground"
-                  }`}
-                />
-              )}
+              <Icon
+                size={20}
+                width={20}
+                height={20}
+                className={`size-5 transition-colors ${
+                  isActive ? "text-foreground" : "text-muted-foreground"
+                }`}
+              />
             </DockIconButton>
           );
         })}

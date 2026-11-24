@@ -10,6 +10,8 @@ interface AuroraBackgroundProps {
   speed?: number;
   blur?: number;
   intensity?: number;
+  /** When true, freeze blob motion (used while the page is scrolling). */
+  paused?: boolean;
 }
 
 export const AURORA_LIGHT_COLORS = [
@@ -33,6 +35,7 @@ interface BlobConfig {
   size: string;
   initialX: string;
   initialY: string;
+  // Percent-of-viewport offsets applied via transform (not left/top).
   xKeyframes: string[];
   yKeyframes: string[];
   scaleKeyframes: number[];
@@ -46,8 +49,8 @@ function generateBlobs(colors: string[], speed: number): BlobConfig[] {
       size: "60%",
       initialX: "10%",
       initialY: "-20%",
-      xKeyframes: ["10%", "50%", "30%", "70%", "10%"],
-      yKeyframes: ["-20%", "10%", "40%", "-10%", "-20%"],
+      xKeyframes: ["0%", "40%", "20%", "60%", "0%"],
+      yKeyframes: ["0%", "30%", "60%", "10%", "0%"],
       scaleKeyframes: [1, 1.2, 0.9, 1.1, 1],
       duration: 20 / speed,
     },
@@ -56,8 +59,8 @@ function generateBlobs(colors: string[], speed: number): BlobConfig[] {
       size: "55%",
       initialX: "60%",
       initialY: "60%",
-      xKeyframes: ["60%", "20%", "80%", "40%", "60%"],
-      yKeyframes: ["60%", "20%", "50%", "80%", "60%"],
+      xKeyframes: ["0%", "-40%", "20%", "-20%", "0%"],
+      yKeyframes: ["0%", "-40%", "-10%", "20%", "0%"],
       scaleKeyframes: [1.1, 0.8, 1.3, 0.9, 1.1],
       duration: 25 / speed,
     },
@@ -66,8 +69,8 @@ function generateBlobs(colors: string[], speed: number): BlobConfig[] {
       size: "50%",
       initialX: "80%",
       initialY: "-10%",
-      xKeyframes: ["80%", "30%", "60%", "10%", "80%"],
-      yKeyframes: ["-10%", "30%", "70%", "40%", "-10%"],
+      xKeyframes: ["0%", "-50%", "-20%", "-70%", "0%"],
+      yKeyframes: ["0%", "40%", "80%", "50%", "0%"],
       scaleKeyframes: [0.9, 1.3, 1, 1.2, 0.9],
       duration: 22 / speed,
     },
@@ -76,8 +79,8 @@ function generateBlobs(colors: string[], speed: number): BlobConfig[] {
       size: "45%",
       initialX: "30%",
       initialY: "70%",
-      xKeyframes: ["30%", "70%", "10%", "50%", "30%"],
-      yKeyframes: ["70%", "10%", "30%", "60%", "70%"],
+      xKeyframes: ["0%", "40%", "-20%", "20%", "0%"],
+      yKeyframes: ["0%", "-60%", "-40%", "-10%", "0%"],
       scaleKeyframes: [1, 1.1, 0.8, 1.2, 1],
       duration: 28 / speed,
     },
@@ -86,8 +89,8 @@ function generateBlobs(colors: string[], speed: number): BlobConfig[] {
       size: "65%",
       initialX: "50%",
       initialY: "30%",
-      xKeyframes: ["50%", "10%", "70%", "30%", "50%"],
-      yKeyframes: ["30%", "60%", "-10%", "50%", "30%"],
+      xKeyframes: ["0%", "-40%", "20%", "-20%", "0%"],
+      yKeyframes: ["0%", "30%", "-40%", "20%", "0%"],
       scaleKeyframes: [1.2, 0.9, 1.1, 0.85, 1.2],
       duration: 18 / speed,
     },
@@ -101,6 +104,7 @@ export function AuroraBackground({
   speed = 1,
   blur = 80,
   intensity = 1,
+  paused = false,
 }: AuroraBackgroundProps) {
   const blobs = generateBlobs(colors, speed);
 
@@ -110,6 +114,7 @@ export function AuroraBackground({
         "relative w-full overflow-hidden bg-background",
         className,
       )}
+      style={{ contain: "paint", isolation: "isolate" }}
     >
       <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
         {blobs.map((blob, i) => (
@@ -123,19 +128,34 @@ export function AuroraBackground({
               left: blob.initialX,
               top: blob.initialY,
               opacity: intensity,
+              // Soft blur — 90–100px forced constant GPU thrash with the fixed dock.
               filter: `blur(${blur}px)`,
-              willChange: "transform",
+              willChange: paused ? "auto" : "transform",
+              transform: "translateZ(0)",
             }}
-            animate={{
-              left: blob.xKeyframes,
-              top: blob.yKeyframes,
-              scale: blob.scaleKeyframes,
-            }}
-            transition={{
-              duration: blob.duration,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
+            // Animate transform only — never left/top (those trigger layout).
+            animate={
+              paused
+                ? {
+                    x: blob.xKeyframes[0],
+                    y: blob.yKeyframes[0],
+                    scale: blob.scaleKeyframes[0],
+                  }
+                : {
+                    x: blob.xKeyframes,
+                    y: blob.yKeyframes,
+                    scale: blob.scaleKeyframes,
+                  }
+            }
+            transition={
+              paused
+                ? { duration: 0 }
+                : {
+                    duration: blob.duration,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }
+            }
           />
         ))}
       </div>

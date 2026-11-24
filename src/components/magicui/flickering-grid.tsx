@@ -164,6 +164,11 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
 
     let animationFrameId: number
     let gridParams: ReturnType<typeof setupCanvas>
+    let scrolling = false
+    let scrollTimeout: ReturnType<typeof setTimeout> | null = null
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches
 
     const updateCanvasSize = () => {
       const newWidth = width || container.clientWidth
@@ -175,8 +180,16 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
     updateCanvasSize()
 
     let lastTime = 0
+    let frameSkip = 0
     const animate = (time: number) => {
-      if (!isInView) return
+      if (!isInView || scrolling || reducedMotion) return
+
+      // Cap to ~30fps — continuous full-grid redraws were competing with the fixed dock.
+      frameSkip = (frameSkip + 1) % 2
+      if (frameSkip !== 0) {
+        animationFrameId = requestAnimationFrame(animate)
+        return
+      }
 
       const deltaTime = (time - lastTime) / 1000
       lastTime = time
@@ -194,6 +207,21 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
       animationFrameId = requestAnimationFrame(animate)
     }
 
+    const onScroll = () => {
+      scrolling = true
+      cancelAnimationFrame(animationFrameId)
+      if (scrollTimeout) clearTimeout(scrollTimeout)
+      scrollTimeout = setTimeout(() => {
+        scrolling = false
+        if (isInView && !reducedMotion) {
+          lastTime = performance.now()
+          animationFrameId = requestAnimationFrame(animate)
+        }
+      }, 160)
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true })
+
     const resizeObserver = new ResizeObserver(() => {
       updateCanvasSize()
     })
@@ -209,12 +237,34 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
 
     intersectionObserver.observe(canvas)
 
-    if (isInView) {
+    if (isInView && !reducedMotion) {
+      // Draw one static frame immediately, then animate.
+      drawGrid(
+        ctx,
+        canvas.width,
+        canvas.height,
+        gridParams.cols,
+        gridParams.rows,
+        gridParams.squares,
+        gridParams.dpr
+      )
       animationFrameId = requestAnimationFrame(animate)
+    } else if (gridParams) {
+      drawGrid(
+        ctx,
+        canvas.width,
+        canvas.height,
+        gridParams.cols,
+        gridParams.rows,
+        gridParams.squares,
+        gridParams.dpr
+      )
     }
 
     return () => {
       cancelAnimationFrame(animationFrameId)
+      if (scrollTimeout) clearTimeout(scrollTimeout)
+      window.removeEventListener("scroll", onScroll)
       resizeObserver.disconnect()
       intersectionObserver.disconnect()
     }
