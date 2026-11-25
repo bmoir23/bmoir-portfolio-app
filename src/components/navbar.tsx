@@ -1,63 +1,32 @@
-import { useState } from "react";
-import { MessageCircleIcon } from "@animateicons/react/lucide";
-import { useIconHover } from "@animateicons/react";
-import { motion, AnimatePresence } from "motion/react";
+import { lazy, Suspense, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import BottomMenu from "@/components/ui/bottom-menu";
-import ChatbotPanel from "@/components/ChatbotPanel";
-import { cn } from "@/lib/utils";
+import {
+  ChatPanelBoundary,
+  ChatPanelSkeleton,
+} from "@/components/chat-panel-boundary";
 
-function ChatBubbleButton({
-  open,
-  onToggle,
-}: {
-  open: boolean;
-  onToggle: () => void;
-}) {
-  const { ref, triggerProps } = useIconHover({ trigger: "hover" });
-
-  return (
-    <motion.button
-      type="button"
-      aria-label={open ? "Close chat assistant" : "Open chat assistant"}
-      aria-expanded={open}
-      initial={{ opacity: 0, scale: 0.85, y: 8 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      whileHover={{ scale: 1.06 }}
-      whileTap={{ scale: 0.95 }}
-      transition={{ type: "spring", stiffness: 380, damping: 22 }}
-      className={cn(
-        "relative grid size-14 place-items-center rounded-full border border-border bg-background/95 text-foreground shadow-[0_12px_40px_-12px_rgba(0,0,0,0.45)] backdrop-blur-xl transition-colors",
-        open ? "bg-accent" : "hover:bg-muted",
-      )}
-      onMouseEnter={triggerProps.onMouseEnter}
-      onMouseLeave={triggerProps.onMouseLeave}
-      onClick={onToggle}
-    >
-      <MessageCircleIcon
-        ref={ref}
-        size={24}
-        className={open ? "text-foreground" : "text-muted-foreground"}
-      />
-      <span className="absolute -right-0.5 -top-0.5 flex size-3.5">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-        <span className="relative inline-flex size-3.5 rounded-full border-2 border-card bg-emerald-500" />
-      </span>
-    </motion.button>
-  );
-}
+const ChatbotPanel = lazy(() => import("@/components/ChatbotPanel"));
 
 export default function Navbar() {
   const [chatOpen, setChatOpen] = useState(false);
 
   return (
     <>
-      <div className="pointer-events-none fixed inset-x-0 bottom-4 z-30 flex justify-center">
+      {/*
+        Fixed dock: promote to its own layer and avoid filter/blur animations on
+        children so iOS Safari doesn't "stick" the bar during scroll.
+      */}
+      <div
+        className="pointer-events-none fixed inset-x-0 bottom-4 z-30 flex justify-center"
+        style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
+      >
         <div className="pointer-events-auto">
           <BottomMenu onOpenChat={() => setChatOpen(true)} />
         </div>
       </div>
 
-      <div className="pointer-events-none fixed bottom-6 right-4 z-40 flex flex-col items-end gap-3">
+      <div className="pointer-events-none fixed bottom-24 right-4 z-40 flex flex-col items-end">
         <AnimatePresence>
           {chatOpen && (
             <motion.div
@@ -68,16 +37,14 @@ export default function Navbar() {
               transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
               className="pointer-events-auto"
             >
-              <ChatbotPanel open onClose={() => setChatOpen(false)} />
+              <ChatPanelBoundary onClose={() => setChatOpen(false)}>
+                <Suspense fallback={<ChatPanelSkeleton />}>
+                  <ChatbotPanel open onClose={() => setChatOpen(false)} />
+                </Suspense>
+              </ChatPanelBoundary>
             </motion.div>
           )}
         </AnimatePresence>
-        <div className="pointer-events-auto">
-          <ChatBubbleButton
-            open={chatOpen}
-            onToggle={() => setChatOpen((value) => !value)}
-          />
-        </div>
       </div>
     </>
   );

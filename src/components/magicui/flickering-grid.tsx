@@ -1,4 +1,3 @@
-
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { cn } from "@/lib/utils"
@@ -30,6 +29,15 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
   const [isInView, setIsInView] = useState(false)
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 })
   const [resolvedColor, setResolvedColor] = useState<string>("rgb(0, 0, 0)")
+  const [reducedMotion, setReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const update = () => setReducedMotion(media.matches)
+    update()
+    media.addEventListener("change", update)
+    return () => media.removeEventListener("change", update)
+  }, [])
 
   const resolveColor = useCallback((colorValue: string | undefined): string => {
     if (typeof window === "undefined") {
@@ -164,24 +172,11 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
 
     let animationFrameId: number
     let gridParams: ReturnType<typeof setupCanvas>
+    let scrolling = false
+    let scrollTimeout: ReturnType<typeof setTimeout> | null = null
 
-    const updateCanvasSize = () => {
-      const newWidth = width || container.clientWidth
-      const newHeight = height || container.clientHeight
-      setCanvasSize({ width: newWidth, height: newHeight })
-      gridParams = setupCanvas(canvas, newWidth, newHeight)
-    }
-
-    updateCanvasSize()
-
-    let lastTime = 0
-    const animate = (time: number) => {
-      if (!isInView) return
-
-      const deltaTime = (time - lastTime) / 1000
-      lastTime = time
-
-      updateSquares(gridParams.squares, deltaTime)
+    const paintStatic = () => {
+      if (!gridParams) return
       drawGrid(
         ctx,
         canvas.width,
@@ -191,8 +186,58 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
         gridParams.squares,
         gridParams.dpr
       )
+    }
+
+    const updateCanvasSize = () => {
+      const newWidth = width || container.clientWidth
+      const newHeight = height || container.clientHeight
+      setCanvasSize({ width: newWidth, height: newHeight })
+      gridParams = setupCanvas(canvas, newWidth, newHeight)
+      // Always redraw after resize — reduced-motion has no animation loop.
+      paintStatic()
+    }
+
+    updateCanvasSize()
+
+    let lastTime = 0
+    let frameSkip = 0
+    const animate = (time: number) => {
+      if (!isInView || scrolling || reducedMotion) return
+
+      // Cap to ~30fps — continuous full-grid redraws were competing with the fixed dock.
+      frameSkip = (frameSkip + 1) % 2
+      if (frameSkip !== 0) {
+        animationFrameId = requestAnimationFrame(animate)
+        return
+      }
+
+      const deltaTime = (time - lastTime) / 1000
+      lastTime = time
+
+      updateSquares(gridParams.squares, deltaTime)
+      paintStatic()
       animationFrameId = requestAnimationFrame(animate)
     }
+
+    const startLoop = () => {
+      cancelAnimationFrame(animationFrameId)
+      if (isInView && !reducedMotion && !scrolling) {
+        lastTime = performance.now()
+        animationFrameId = requestAnimationFrame(animate)
+      }
+    }
+
+    const onScroll = () => {
+      scrolling = true
+      cancelAnimationFrame(animationFrameId)
+      if (scrollTimeout) clearTimeout(scrollTimeout)
+      scrollTimeout = setTimeout(() => {
+        scrolling = false
+        startLoop()
+      }, 160)
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true })
 
     const resizeObserver = new ResizeObserver(() => {
       updateCanvasSize()
@@ -209,16 +254,25 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
 
     intersectionObserver.observe(canvas)
 
-    if (isInView) {
-      animationFrameId = requestAnimationFrame(animate)
-    }
+    paintStatic()
+    startLoop()
 
     return () => {
       cancelAnimationFrame(animationFrameId)
+      if (scrollTimeout) clearTimeout(scrollTimeout)
+      window.removeEventListener("scroll", onScroll)
       resizeObserver.disconnect()
       intersectionObserver.disconnect()
     }
-  }, [setupCanvas, updateSquares, drawGrid, width, height, isInView])
+  }, [
+    setupCanvas,
+    updateSquares,
+    drawGrid,
+    width,
+    height,
+    isInView,
+    reducedMotion,
+  ])
 
   return (
     <div
@@ -237,4 +291,3 @@ export const FlickeringGrid: React.FC<FlickeringGridProps> = ({
     </div>
   )
 }
-

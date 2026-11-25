@@ -22,6 +22,11 @@ on:
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
+    # Skip: GitHub default CodeQL setup is enabled on this repo. Advanced
+    # workflow SARIF uploads fail with "advanced configurations cannot be
+    # processed when the default setup is enabled". Default setup already
+    # runs Analyze (javascript-typescript) successfully.
+    if: false
     # Runner size impacts CodeQL analysis time. To learn more, please see:
     #   - https://gh.io/recommended-hardware-resources-for-running-codeql
     #   - https://gh.io/supported-runners-and-hardware-resources
